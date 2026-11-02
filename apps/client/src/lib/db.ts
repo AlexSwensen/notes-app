@@ -25,6 +25,12 @@ db.version(1).stores({
   meta: 'key',
 });
 
+/** Deletes the local database. The session is kept, so notes re-download on the next sync. */
+export async function resetLocalData() {
+  db.close();
+  await Dexie.delete(db.name);
+}
+
 export async function getMeta<T>(key: string): Promise<T | undefined> {
   return (await db.meta.get(key))?.value as T | undefined;
 }

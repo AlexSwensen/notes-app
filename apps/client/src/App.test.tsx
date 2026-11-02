@@ -120,6 +120,17 @@ describe('App', () => {
     expect(session.token).toBeNull();
   });
 
+  it('offers to reset local data when the database fails to open', async () => {
+    signIn();
+    vi.spyOn(db, 'open').mockRejectedValue(new Error('UnknownError: Internal error.'));
+    render(<App />);
+
+    expect(await screen.findByRole('button', { name: 'Reset local data' })).toBeTruthy();
+    expect(screen.queryByText('ada@example.com')).toBeNull();
+    expect(syncEngine.start).not.toHaveBeenCalled();
+    vi.mocked(db.open).mockRestore();
+  });
+
   it('warns when not served over HTTPS until dismissed', () => {
     vi.stubGlobal('isSecureContext', false);
     const { unmount } = render(<App />);
