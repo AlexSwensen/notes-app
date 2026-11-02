@@ -194,6 +194,8 @@ export function Sidebar(props: Props) {
       </div>
 
       <div className="flex flex-col p-1 border-t border-line">
+        <a className={`${navButton} text-accent`} href="https://github.com/AlexSwensen/sheafly#contributing" target="_blank" rel="noopener noreferrer"><span>💡</span> Contribute</a>
+        <a className={navButton} href="https://github.com/AlexSwensen/sheafly/issues" target="_blank" rel="noopener noreferrer"><span>🐞</span> Report a bug</a>
         <button className={`${navButton}${props.route === 'trash' ? ' bg-hover' : ''}`} onClick={() => onNavigate('#/trash')}><span>🗑</span> Trash</button>
         <button className={navButton} onClick={props.onToggleTheme}><span>{props.theme === 'dark' ? '☀️' : '🌙'}</span> {props.theme === 'dark' ? 'Light' : 'Dark'} mode</button>
         <button className={navButton} onClick={props.onLogout}><span>↪</span> Log out</button>

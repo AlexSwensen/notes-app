@@ -14,6 +14,8 @@ A Notion-style notes app with **cloud sync across your devices** and **instant f
 - **Trash**: restore pages, or delete them permanently
 - Light and dark mode, responsive mobile layout
 
+Contributions are welcome: bug reports, ideas and pull requests all help. See [Contributing](#contributing).
+
 ## Quick start (Docker)
 
 ```bash
@@ -148,3 +150,20 @@ packages/
 ```
 
 `@sheafly/shared` contains only types, so it has no build step and adds nothing to the server at runtime. If you change the shape of a note or an API response, change it there and both apps will flag what needs updating (`npm run typecheck`).
+
+## Contributing
+
+Contributions of any size are welcome, from fixing a typo to building a new feature. You don't need to be an expert to help.
+
+- **Found a bug or have an idea?** [Open an issue](https://github.com/AlexSwensen/sheafly/issues). Steps to reproduce, screenshots and your browser/device make bugs much easier to fix.
+- **Want to write code?** Look for open issues, or open one first for larger changes so we can agree on the approach before you put in the work.
+
+To send a pull request:
+
+1. Fork the repo and create a branch from `main`.
+2. Set up the project as described in [Development](#development).
+3. Make your change and add or update tests next to the code you touched.
+4. Run `npm run lint`, `npm run typecheck`, `npm test` and `npm run build`. CI runs the same checks.
+5. Use [Conventional Commits](https://www.conventionalcommits.org) for your commit messages (see [Releases](#releases)), then open the pull request against `main`.
+
+[AGENTS.md](AGENTS.md) summarizes the project conventions (styling, database migrations, identifiers that must not be renamed), so it's worth a quick read before your first change.
