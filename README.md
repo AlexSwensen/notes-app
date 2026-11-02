@@ -58,7 +58,7 @@ On Unraid, add `https://github.com/AlexSwensen/sheafly` under **Docker → Templ
 The Publish workflow pushes to Docker Hub too once these are set in the GitHub repo (**Settings → Secrets and variables → Actions**):
 
 - **Variable** `DOCKERHUB_USERNAME`: your Docker Hub username (the image becomes `<username>/sheafly`)
-- **Secret** `DOCKERHUB_TOKEN`: a Docker Hub [access token](https://app.docker.com/settings/personal-access-tokens) with *Read & Write* access
+- **Secret** `DOCKERHUB_TOKEN`: a Docker Hub [access token](https://app.docker.com/settings/personal-access-tokens) with *Read, Write, and Delete* access
 
 ## Development
 
