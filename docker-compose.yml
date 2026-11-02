@@ -1,0 +1,19 @@
+services:
+  notes:
+    build: .
+    image: notes-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Set to "false" after creating your account to lock the server to existing users.
+      ALLOW_SIGNUP: "true"
+      # Set to "true" when running behind a reverse proxy (Caddy, nginx, Tailscale serve).
+      TRUST_PROXY: "false"
+      # Optional: provide a fixed secret instead of the auto-generated /data/secret.key
+      # AUTH_SECRET: change-me-to-a-long-random-string
+    volumes:
+      - notes-data:/data
+
+volumes:
+  notes-data:
