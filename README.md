@@ -88,6 +88,8 @@ To ship it, open the draft under **Releases**, edit the notes if you like, and c
 
 semantic-release counts versions by git tag, not by whether a release was published. So if you haven't published a draft yet, the next releasable push still makes a new draft with a higher version. Publish the newest one, and delete older drafts you don't want.
 
+`main` is protected by a ruleset: changes go through a pull request with the Lint & typecheck, Server tests, Client tests, Build and Commit messages checks passing (merge or rebase; squash is off because PR titles aren't linted). Force-pushes and deletion are blocked. The release job pushes its version commit with a deploy key (secret `RELEASE_DEPLOY_KEY`), the only actor allowed to bypass the ruleset.
+
 Commit messages must follow [Conventional Commits](https://www.conventionalcommits.org). A git hook checks them locally (installed by `npm install`), and CI checks them on pull requests.
 
 | Commit | Release |
