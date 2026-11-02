@@ -1,6 +1,7 @@
 import type { SyncRequest, SyncResponse } from '@sheafly/shared';
 import { db, getMeta, setMeta, stripLocal, type Note } from './db';
 import { api, ApiError, session } from './api';
+import { uuid } from './uuid';
 
 export type SyncStatus = 'idle' | 'syncing' | 'offline' | 'error';
 
@@ -9,7 +10,7 @@ const BATCH = 200;
 function getClientId(): string {
   let id = sessionStorage.getItem('notes.clientId');
   if (!id) {
-    id = crypto.randomUUID();
+    id = uuid();
     sessionStorage.setItem('notes.clientId', id);
   }
   return id;
