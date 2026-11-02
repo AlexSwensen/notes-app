@@ -13,6 +13,7 @@ import { PageView } from './components/PageView';
 import { SearchPalette } from './components/SearchPalette';
 import { Trash } from './components/Trash';
 import { Home } from './components/Home';
+import { DatabaseError } from './components/DatabaseError';
 
 const NO_NOTES: LocalNote[] = [];
 
@@ -132,6 +133,27 @@ function Workspace() {
   );
 }
 
+/** Opens the local database before showing the workspace, so open failures get a recovery screen. */
+function LocalDataGate() {
+  const [state, setState] = useState<{ status: 'opening' | 'ready' } | { status: 'error'; error: unknown }>({
+    status: 'opening',
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    db.open().then(
+      () => !cancelled && setState({ status: 'ready' }),
+      (error: unknown) => !cancelled && setState({ status: 'error', error }),
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (state.status === 'error') return <DatabaseError error={state.error} />;
+  return state.status === 'ready' ? <Workspace /> : null;
+}
+
 export default function App() {
   const [authed, setAuthed] = useState(() => !!session.token);
   const [showHttpWarning, setShowHttpWarning] = useState(
@@ -154,7 +176,7 @@ export default function App() {
         </div>
       )}
       <div className="flex-1 min-h-0">
-        {authed ? <Workspace /> : <Auth onAuthed={() => setAuthed(true)} />}
+        {authed ? <LocalDataGate /> : <Auth onAuthed={() => setAuthed(true)} />}
       </div>
     </div>
   );
