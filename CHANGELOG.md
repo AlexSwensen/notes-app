@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/AlexSwensen/sheafly/compare/v1.1.0...v1.2.0) (2026-11-02)
+
+### Features
+
+* **client:** link to the contributing guide and issue tracker from the sidebar ([1b4d7c5](https://github.com/AlexSwensen/sheafly/commit/1b4d7c5de4e919bac7b7ad0e53ccca30810f369e))
+
 ## [1.1.0](https://github.com/AlexSwensen/sheafly/compare/v1.0.1...v1.1.0) (2026-11-02)
 
 ### Features
