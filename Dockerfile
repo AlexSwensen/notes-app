@@ -26,6 +26,7 @@ COPY apps/server/package.json apps/server/
 COPY packages/shared/package.json packages/shared/
 RUN npm ci --omit=dev -w @notes/server && npm cache clean --force
 COPY apps/server/src apps/server/src
+COPY apps/server/drizzle apps/server/drizzle
 COPY --from=client /app/apps/client/dist apps/client/dist
 RUN mkdir -p /data && chown node:node /data
 USER node

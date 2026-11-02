@@ -34,7 +34,7 @@ export function registerAuthRoutes(app: FastifyInstance, ctx: AppContext) {
     if (typeof email !== 'string' || typeof password !== 'string') return reply.code(400).send({ error: 'Email and password required' });
     if (isRateLimited(req.ip)) return reply.code(429).send({ error: 'Too many attempts, try again later' });
     const user = db.userByEmail(email.trim());
-    if (!user || !(await verifyPassword(password, user.password_hash))) return reply.code(401).send({ error: 'Invalid email or password' });
+    if (!user || !(await verifyPassword(password, user.passwordHash))) return reply.code(401).send({ error: 'Invalid email or password' });
     const res: AuthResponse = { token: tokens.issue(user.id), user: { id: user.id, email: user.email } };
     return res;
   });

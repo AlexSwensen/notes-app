@@ -97,12 +97,12 @@ function Workspace() {
   else if (route === 'page' && current && !current.purged)
     main = <PageView note={current} byId={byId} subpages={tree.get(current.id) ?? NO_NOTES} onNavigate={go} />;
   else if (route === 'page')
-    main = <div className="page empty-state">{current?.purged ? 'This page was permanently deleted.' : 'Page not found.'}</div>;
+    main = <div className="min-h-full grid place-items-center text-muted">{current?.purged ? 'This page was permanently deleted.' : 'Page not found.'}</div>;
   else main = <Home notes={notes} onNavigate={go} onSearch={() => setSearchOpen(true)} />;
 
   return (
-    <div className={`app${sidebarOpen ? ' sidebar-open' : ''}`}>
-      {sidebarOpen && <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />}
+    <div className="group/app flex h-full overflow-hidden" data-sidebar={sidebarOpen ? 'open' : 'closed'}>
+      {sidebarOpen && <div className="hidden max-md:block fixed inset-0 z-55 bg-[rgba(15,15,15,0.4)]" onClick={() => setSidebarOpen(false)} />}
       {sidebarOpen && (
         <Sidebar
           tree={tree}
@@ -121,9 +121,9 @@ function Workspace() {
           setExpanded={setExpanded}
         />
       )}
-      <main className="main">
+      <main className="flex-1 min-w-0 overflow-y-auto relative">
         {!sidebarOpen && (
-          <button className="icon-btn open-sidebar" title="Open sidebar (Ctrl+\)" onClick={() => setSidebarOpen(true)}>☰</button>
+          <button className="icon-btn absolute top-2 left-2 z-5" title="Open sidebar (Ctrl+\)" onClick={() => setSidebarOpen(true)}>☰</button>
         )}
         {main}
       </main>

@@ -1,6 +1,6 @@
 // Entry point: read config, open the database, start the HTTP server.
 import { loadConfig } from './config.ts';
-import { openDb } from './db.ts';
+import { openDb } from './db/index.ts';
 import { buildApp } from './app.ts';
 
 const config = loadConfig();

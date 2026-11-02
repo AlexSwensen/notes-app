@@ -48,14 +48,17 @@ const SlashList = forwardRef<ListHandle, SuggestionProps<Command>>(function Slas
     },
   }));
 
-  if (!props.items.length) return <div className="slash-menu"><div className="slash-empty">No results</div></div>;
+  const menu = 'w-[300px] max-h-80 overflow-y-auto bg-elevated rounded-lg shadow-pop p-1';
+  if (!props.items.length) return <div className={menu}><div className="p-2 text-muted text-sm">No results</div></div>;
   return (
-    <div className="slash-menu" role="listbox">
-      <div className="slash-heading">Basic blocks</div>
+    <div className={menu} role="listbox">
+      <div className="text-[11px] font-semibold text-muted px-2 pt-1.5 pb-1">Basic blocks</div>
       {props.items.map((item, i) => (
         <button
           key={item.title}
-          className={`slash-item${i === selected ? ' selected' : ''}`}
+          role="option"
+          aria-selected={i === selected}
+          className="flex gap-2.5 items-center w-full text-left px-2 py-1 rounded aria-selected:bg-hover"
           onMouseEnter={() => setSelected(i)}
           onMouseDown={(e) => {
             e.preventDefault();
@@ -65,10 +68,10 @@ const SlashList = forwardRef<ListHandle, SuggestionProps<Command>>(function Slas
             if (i === selected) el?.scrollIntoView({ block: 'nearest' });
           }}
         >
-          <span className="slash-icon">{item.icon}</span>
+          <span className="size-10 border border-line rounded-md grid place-items-center bg-bg text-[15px] font-semibold shrink-0">{item.icon}</span>
           <span>
-            <span className="slash-title">{item.title}</span>
-            <span className="slash-desc">{item.description}</span>
+            <span className="block text-sm">{item.title}</span>
+            <span className="block text-xs text-muted">{item.description}</span>
           </span>
         </button>
       ))}
@@ -103,7 +106,7 @@ export const SlashCommand = Extension.create({
             onStart: (props) => {
               renderer = new ReactRenderer(SlashList, { props, editor: props.editor });
               el = document.createElement('div');
-              el.className = 'slash-popup';
+              el.className = 'fixed z-50';
               el.appendChild(renderer.element);
               document.body.appendChild(el);
               position(el, props.clientRect?.());

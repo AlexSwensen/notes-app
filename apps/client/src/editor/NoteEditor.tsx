@@ -12,6 +12,9 @@ import { SlashCommand } from './SlashCommand';
 
 const SAVE_DELAY = 400;
 
+const markButton = (active: boolean) =>
+  `min-w-[30px] h-7 px-1.5 rounded text-sm ${active ? 'text-accent bg-accent/12' : 'hover:bg-hover'}`;
+
 export function NoteEditor({ note, focusSignal, editable = true }: { note: LocalNote; focusSignal: number; editable?: boolean }) {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const flush = useRef<() => void>(() => {});
@@ -86,15 +89,15 @@ export function NoteEditor({ note, focusSignal, editable = true }: { note: Local
 
   return (
     <>
-      <BubbleMenu editor={editor} className="bubble-menu">
-        <button className={editor.isActive('bold') ? 'active' : ''} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold (Ctrl+B)"><b>B</b></button>
-        <button className={editor.isActive('italic') ? 'active' : ''} onClick={() => editor.chain().focus().toggleItalic().run()} title="Italic (Ctrl+I)"><i>I</i></button>
-        <button className={editor.isActive('underline') ? 'active' : ''} onClick={() => editor.chain().focus().toggleUnderline().run()} title="Underline (Ctrl+U)"><u>U</u></button>
-        <button className={editor.isActive('strike') ? 'active' : ''} onClick={() => editor.chain().focus().toggleStrike().run()} title="Strikethrough"><s>S</s></button>
-        <button className={editor.isActive('code') ? 'active' : ''} onClick={() => editor.chain().focus().toggleCode().run()} title="Inline code">{'</>'}</button>
-        <button className={editor.isActive('highlight') ? 'active' : ''} onClick={() => editor.chain().focus().toggleHighlight().run()} title="Highlight">🖍</button>
+      <BubbleMenu editor={editor} className="flex bg-elevated shadow-pop rounded-md p-[3px] gap-px">
+        <button className={markButton(editor.isActive('bold'))} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold (Ctrl+B)"><b>B</b></button>
+        <button className={markButton(editor.isActive('italic'))} onClick={() => editor.chain().focus().toggleItalic().run()} title="Italic (Ctrl+I)"><i>I</i></button>
+        <button className={markButton(editor.isActive('underline'))} onClick={() => editor.chain().focus().toggleUnderline().run()} title="Underline (Ctrl+U)"><u>U</u></button>
+        <button className={markButton(editor.isActive('strike'))} onClick={() => editor.chain().focus().toggleStrike().run()} title="Strikethrough"><s>S</s></button>
+        <button className={markButton(editor.isActive('code'))} onClick={() => editor.chain().focus().toggleCode().run()} title="Inline code">{'</>'}</button>
+        <button className={markButton(editor.isActive('highlight'))} onClick={() => editor.chain().focus().toggleHighlight().run()} title="Highlight">🖍</button>
         <button
-          className={editor.isActive('link') ? 'active' : ''}
+          className={markButton(editor.isActive('link'))}
           title="Link"
           onClick={() => {
             if (editor.isActive('link')) return editor.chain().focus().unsetLink().run();

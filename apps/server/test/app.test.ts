@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { openDb } from '../src/db.ts';
+import { openDb } from '../src/db/index.ts';
 import { buildApp } from '../src/app.ts';
 
 function makeApp(allowSignup = true) {

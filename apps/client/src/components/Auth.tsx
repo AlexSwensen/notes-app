@@ -2,6 +2,10 @@ import { useEffect, useState, type FormEvent } from 'react';
 import type { AuthRequest, AuthResponse, ConfigResponse } from '@notes/shared';
 import { api, session } from '../lib/api';
 
+const labelClass = 'flex flex-col gap-1.5 text-[13px] text-muted';
+const inputClass =
+  'px-2.5 py-2 border border-line rounded-md bg-hover text-fg text-[15px] outline-none focus:border-accent focus:ring-3 focus:ring-accent/25';
+
 export function Auth({ onAuthed }: { onAuthed: () => void }) {
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [allowSignup, setAllowSignup] = useState(true);
@@ -31,18 +35,19 @@ export function Auth({ onAuthed }: { onAuthed: () => void }) {
   }
 
   return (
-    <div className="auth">
-      <form className="auth-card" onSubmit={submit}>
-        <div className="auth-logo">📝</div>
-        <h1>{mode === 'login' ? 'Welcome back' : 'Create your account'}</h1>
-        <p className="muted">Your notes, synced across all your devices.</p>
-        <label>
+    <div className="min-h-full grid place-items-center p-6 bg-sidebar">
+      <form className="w-full max-w-[360px] flex flex-col gap-3.5 bg-bg p-8 rounded-xl shadow-pop" onSubmit={submit}>
+        <div className="text-4xl">📝</div>
+        <h1 className="text-2xl font-bold">{mode === 'login' ? 'Welcome back' : 'Create your account'}</h1>
+        <p className="-mt-2 mb-1 text-sm text-muted">Your notes, synced across all your devices.</p>
+        <label className={labelClass}>
           Email
-          <input type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoFocus />
+          <input className={inputClass} type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoFocus />
         </label>
-        <label>
+        <label className={labelClass}>
           Password
           <input
+            className={inputClass}
             type="password"
             autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             required
@@ -51,8 +56,8 @@ export function Auth({ onAuthed }: { onAuthed: () => void }) {
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        {error && <div className="auth-error" role="alert">{error}</div>}
-        <button className="btn-primary" disabled={busy}>
+        {error && <div className="text-danger text-[13px]" role="alert">{error}</div>}
+        <button className="bg-accent text-white rounded-md px-3.5 py-[9px] font-medium hover:brightness-108 disabled:opacity-60" disabled={busy}>
           {busy ? 'Please wait…' : mode === 'login' ? 'Log in' : 'Sign up'}
         </button>
         {(allowSignup || mode === 'signup') && (
