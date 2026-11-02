@@ -23,6 +23,7 @@ function setHash(hash: string) {
 }
 
 beforeEach(() => {
+  vi.stubGlobal('isSecureContext', true);
   vi.stubGlobal('EventSource', FakeEventSource);
   vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })));
   vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ seq: 0, more: false, changes: [], allowSignup: true })));
@@ -117,5 +118,23 @@ describe('App', () => {
 
     syncEngine.onUnauthorized();
     expect(session.token).toBeNull();
+  });
+
+  it('warns when not served over HTTPS until dismissed', () => {
+    vi.stubGlobal('isSecureContext', false);
+    const { unmount } = render(<App />);
+
+    expect(screen.getByRole('alert').textContent).toContain("isn't served over HTTPS");
+    fireEvent.click(screen.getByTitle('Dismiss'));
+    expect(screen.queryByRole('alert')).toBeNull();
+
+    unmount();
+    render(<App />);
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
+
+  it('shows no warning over HTTPS', () => {
+    render(<App />);
+    expect(screen.queryByRole('alert')).toBeNull();
   });
 });

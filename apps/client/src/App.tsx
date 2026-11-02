@@ -134,5 +134,28 @@ function Workspace() {
 
 export default function App() {
   const [authed, setAuthed] = useState(() => !!session.token);
-  return authed ? <Workspace /> : <Auth onAuthed={() => setAuthed(true)} />;
+  const [showHttpWarning, setShowHttpWarning] = useState(
+    () => !window.isSecureContext && !localStorage.getItem('notes.httpWarningDismissed'),
+  );
+  const dismissHttpWarning = () => {
+    localStorage.setItem('notes.httpWarningDismissed', '1');
+    setShowHttpWarning(false);
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      {showHttpWarning && (
+        <div role="alert" className="flex items-center gap-3 px-4 py-2 text-sm bg-mark text-fg border-b border-line">
+          <span className="flex-1">
+            This page isn't served over HTTPS, so offline mode and installing as an app are unavailable. Use a reverse
+            proxy with TLS or Tailscale to enable them.
+          </span>
+          <button className="icon-btn" title="Dismiss" onClick={dismissHttpWarning}>✕</button>
+        </div>
+      )}
+      <div className="flex-1 min-h-0">
+        {authed ? <Workspace /> : <Auth onAuthed={() => setAuthed(true)} />}
+      </div>
+    </div>
+  );
 }
