@@ -67,6 +67,12 @@ describe('Sidebar', () => {
     expect(screen.getByText('v1.2.3-test')).toBeTruthy();
   });
 
+  it('links to the contributing guide and the issue tracker', async () => {
+    await renderSidebar([]);
+    expect(screen.getByRole('link', { name: /Contribute/ }).getAttribute('href')).toBe('https://github.com/AlexSwensen/sheafly#contributing');
+    expect(screen.getByRole('link', { name: /Report a bug/ }).getAttribute('href')).toBe('https://github.com/AlexSwensen/sheafly/issues');
+  });
+
   it('lists favorites in their own section', async () => {
     await renderSidebar([makeNote({ title: 'Starred', favorite: true })]);
     const favorites = screen.getByText('Favorites').closest('section')!;
