@@ -51,7 +51,20 @@ Or, for a private setup, use [Tailscale](https://tailscale.com) with `tailscale 
 
 Every release publishes a multi-arch image (amd64 and arm64) to `ghcr.io/alexswensen/sheafly`, and to Docker Hub when that's configured (see below). Images are tagged with the version (`1.4.2`, `1.4`, `1`) and `latest`. To use one instead of building locally, replace `build: .` with `image: ghcr.io/alexswensen/sheafly:1` in `docker-compose.yml`.
 
-On Unraid, add `https://github.com/AlexSwensen/sheafly` under **Docker → Template repositories**, or install from [`unraid/sheafly.xml`](unraid/sheafly.xml). Data goes to `/mnt/user/appdata/sheafly`. To pick up new releases automatically, install the **Auto Update Applications** plugin from Community Applications and enable it for the container. Unraid also flags updates on the Docker tab.
+#### Unraid
+
+1. Copy the template into Unraid's user templates folder. From the Unraid terminal (**>_** in the top right):
+
+   ```bash
+   wget -O /boot/config/plugins/dockerMan/templates-user/my-sheafly.xml \
+     https://raw.githubusercontent.com/AlexSwensen/sheafly/main/unraid/sheafly.xml
+   ```
+
+   Or copy [`unraid/sheafly.xml`](unraid/sheafly.xml) there yourself. The file name must start with `my-`.
+2. On the **Docker** tab, click **Add Container** and pick **sheafly** under **User templates** in the **Template** dropdown.
+3. Check the port and data path (default `/mnt/user/appdata/sheafly`), then click **Apply**.
+
+The template uses the `latest` tag, so Unraid's **Check for updates** on the Docker tab flags each new stable release (pre-releases are never tagged `latest`). This needs the GHCR package to be public: GitHub creates it as private, so change it under **Packages → sheafly → Package settings → Change visibility**. Otherwise Unraid shows the update status as "not available". To stay on one major version, set the repository to `ghcr.io/alexswensen/sheafly:1` instead. To install updates automatically, add the **Auto Update Applications** plugin from Community Applications and enable it for the container.
 
 #### Publishing to Docker Hub
 
