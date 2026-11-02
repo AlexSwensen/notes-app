@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/AlexSwensen/sheafly/compare/v1.2.0...v1.2.1) (2026-11-02)
+
+### Bug Fixes
+
+* offer to reset local data when IndexedDB fails to open ([a6631dd](https://github.com/AlexSwensen/sheafly/commit/a6631dd4ab238987679f8ffdd51bac2e0e47703b))
+
 ## [1.2.0](https://github.com/AlexSwensen/sheafly/compare/v1.1.0...v1.2.0) (2026-11-02)
 
 ### Features
