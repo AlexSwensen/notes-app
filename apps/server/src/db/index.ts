@@ -9,6 +9,7 @@ import type { Note } from '@notes/shared';
 import { meta } from './schema/meta.ts';
 import { notes } from './schema/notes.ts';
 import { users } from './schema/users.ts';
+import { relations } from './schema/relations.ts';
 
 type NoteRow = typeof notes.$inferSelect;
 
@@ -20,7 +21,7 @@ export function openDb(file: string) {
   if (file !== ':memory:') mkdirSync(dirname(file), { recursive: true });
   const sqlite = new DatabaseSync(file);
   sqlite.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
-  const db = drizzle({ client: sqlite });
+  const db = drizzle({ client: sqlite, relations });
   migrate(db, { migrationsFolder: fileURLToPath(new URL('../../drizzle', import.meta.url)) });
 
   const seqValue = sql<number>`CAST(${meta.value} AS INTEGER)`;
@@ -32,8 +33,9 @@ export function openDb(file: string) {
 
   return {
     raw: sqlite,
-    userByEmail: (email: string) => db.select().from(users).where(eq(users.email, email)).get(),
-    userById: (id: string) => db.select().from(users).where(eq(users.id, id)).get(),
+    drizzle: db,
+    userByEmail: (email: string) => db.query.users.findFirst({ where: { email } }).sync(),
+    userById: (id: string) => db.query.users.findFirst({ where: { id } }).sync(),
     userCount: () => db.select({ n: count() }).from(users).get()!.n,
     createUser(id: string, email: string, hash: string) {
       db.insert(users).values({ id, email, passwordHash: hash, createdAt: Date.now() }).run();
