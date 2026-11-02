@@ -36,11 +36,19 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      # Docker Hub is optional: set the DOCKERHUB_USERNAME variable and DOCKERHUB_TOKEN secret to enable it.
+      - uses: docker/login-action@v4
+        if: vars.DOCKERHUB_USERNAME != ''
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - id: meta
         uses: docker/metadata-action@v6
         with:
           # Fixed image name, so renaming the GitHub repo doesn't move the image.
-          images: ghcr.io/${{ github.repository_owner }}/sheafly
+          images: |
+            ghcr.io/${{ github.repository_owner }}/sheafly
+            name=docker.io/${{ vars.DOCKERHUB_USERNAME }}/sheafly,enable=${{ vars.DOCKERHUB_USERNAME != '' }}
           # latest=auto only tags stable versions (not pre-releases like v2.0.0-beta.1) as latest.
           flavor: latest=auto
           tags: |

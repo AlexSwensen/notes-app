@@ -5,13 +5,13 @@
   <Registry>https://github.com/users/AlexSwensen/packages/container/package/sheafly</Registry>
   <Network>bridge</Network>
   <Privileged>false</Privileged>
-  <Support>https://github.com/AlexSwensen/notes-app/issues</Support>
-  <Project>https://github.com/AlexSwensen/notes-app</Project>
+  <Support>https://github.com/AlexSwensen/sheafly/issues</Support>
+  <Project>https://github.com/AlexSwensen/sheafly</Project>
   <Overview>Sheafly is a self-hosted, Notion-style notes app with cloud sync across your devices, offline support (PWA) and instant full-text search. Create your account on first visit, then set "Allow sign-up" to false so nobody else can register. Installing it as an app on phones requires HTTPS, e.g. behind a reverse proxy or Tailscale.</Overview>
   <Category>Productivity: Tools:</Category>
   <WebUI>http://[IP]:[PORT:3000]/</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/AlexSwensen/notes-app/main/unraid/sheafly.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/AlexSwensen/notes-app/main/apps/client/public/pwa-512x512.png</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/AlexSwensen/sheafly/main/unraid/sheafly.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/AlexSwensen/sheafly/main/apps/client/public/pwa-512x512.png</Icon>
   <Config Name="Web UI port" Target="3000" Default="3000" Mode="tcp" Description="Port for the web app." Type="Port" Display="always" Required="true" Mask="false">3000</Config>
   <Config Name="Data" Target="/data" Default="/mnt/user/appdata/sheafly" Mode="rw" Description="SQLite database and signing key. Back this folder up." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/sheafly</Config>
   <Config Name="Allow sign-up" Target="ALLOW_SIGNUP" Default="true|false" Description="Set to false after creating your account. The first account can always be created." Type="Variable" Display="always" Required="false" Mask="false">true</Config>

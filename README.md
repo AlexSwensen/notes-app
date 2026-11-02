@@ -49,9 +49,16 @@ Or, for a private setup, use [Tailscale](https://tailscale.com) with `tailscale 
 
 ### Prebuilt images and Unraid
 
-Every release publishes a multi-arch image (amd64 and arm64) to `ghcr.io/alexswensen/sheafly`, tagged with the version (`1.4.2`, `1.4`, `1`) and `latest`. To use it instead of building locally, replace `build: .` with `image: ghcr.io/alexswensen/sheafly:1` in `docker-compose.yml`.
+Every release publishes a multi-arch image (amd64 and arm64) to `ghcr.io/alexswensen/sheafly`, and to Docker Hub when that's configured (see below). Images are tagged with the version (`1.4.2`, `1.4`, `1`) and `latest`. To use one instead of building locally, replace `build: .` with `image: ghcr.io/alexswensen/sheafly:1` in `docker-compose.yml`.
 
-On Unraid, add `https://github.com/AlexSwensen/notes-app` under **Docker → Template repositories**, or install from [`unraid/sheafly.xml`](unraid/sheafly.xml). Data goes to `/mnt/user/appdata/sheafly`.
+On Unraid, add `https://github.com/AlexSwensen/sheafly` under **Docker → Template repositories**, or install from [`unraid/sheafly.xml`](unraid/sheafly.xml). Data goes to `/mnt/user/appdata/sheafly`. To pick up new releases automatically, install the **Auto Update Applications** plugin from Community Applications and enable it for the container. Unraid also flags updates on the Docker tab.
+
+#### Publishing to Docker Hub
+
+The Publish workflow pushes to Docker Hub too once these are set in the GitHub repo (**Settings → Secrets and variables → Actions**):
+
+- **Variable** `DOCKERHUB_USERNAME`: your Docker Hub username (the image becomes `<username>/sheafly`)
+- **Secret** `DOCKERHUB_TOKEN`: a Docker Hub [access token](https://app.docker.com/settings/personal-access-tokens) with *Read & Write* access
 
 ## Development
 
