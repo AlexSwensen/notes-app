@@ -6,6 +6,8 @@
     "dev": "node --watch src/index.ts",
     "start": "node src/index.ts",
     "test": "node --test \"test/**/*.test.ts\"",
+    "test:coverage": "mkdir -p coverage && node --test --experimental-test-coverage --test-coverage-include=\"src/**\" --test-coverage-exclude=src/index.ts --test-coverage-lines=95 --test-coverage-branches=90 --test-coverage-functions=85 --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info \"test/**/*.test.ts\"",
+    "lint": "oxlint",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio"
@@ -22,6 +24,7 @@
     "@notes/shared": "*",
     "@types/node": "^24.19.2",
     "drizzle-kit": "^1.0.0-rc.5",
+    "oxlint": "^1.90.0",
     "typescript": "~7.0.2"
   }
 }

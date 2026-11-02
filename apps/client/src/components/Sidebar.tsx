@@ -87,6 +87,7 @@ export function Sidebar(props: Props) {
           }}
           onDragOver={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             setDragOver(note.id);
           }}
           onDragLeave={() => setDragOver((d) => (d === note.id ? null : d))}

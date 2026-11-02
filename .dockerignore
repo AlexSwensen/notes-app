@@ -1,5 +1,6 @@
 **/node_modules
 **/dist
+**/coverage
 apps/server/data
 .git
 *.log

@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - name: Check migrations match the schema
+        run: |
+          npm run db:generate -w @notes/server
+          if [ -n "$(git status --porcelain apps/server/drizzle)" ]; then
+            echo "::error::The Drizzle schema has changes without a migration. Run 'npm run db:generate -w @notes/server' and commit the result."
+            exit 1
+          fi
+
+  test-server:
+    name: Server tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Run tests with coverage
+        shell: bash # enables pipefail so a failing test run isn't masked by tee
+        run: npm run test:coverage -w @notes/server | tee server-tests.log
+      - name: Coverage summary
+        if: always()
+        run: |
+          {
+            echo '### Server coverage'
+            echo '```'
+            sed -n '/start of coverage report/,/end of coverage report/p' server-tests.log | sed 's/^ℹ //'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: server-coverage
+          path: apps/server/coverage
+          if-no-files-found: ignore
+
+  test-client:
+    name: Client tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Run tests with coverage
+        shell: bash # enables pipefail so a failing test run isn't masked by tee
+        run: npm run test:coverage -w @notes/client | tee client-tests.log
+      - name: Coverage summary
+        if: always()
+        run: |
+          {
+            echo '### Client coverage'
+            echo '```'
+            grep -E '^\s*(File|All files|-+\|)|^\s+\S+\.tsx?\s+\|' client-tests.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: client-coverage
+          path: apps/client/coverage
+          if-no-files-found: ignore
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

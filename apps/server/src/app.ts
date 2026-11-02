@@ -72,7 +72,8 @@ export function buildApp(opts: AppOptions) {
   registerEventRoutes(app, ctx);
   registerStaticRoutes(app, opts.staticDir);
 
-  app.addHook('onClose', async () => sse.closeAll());
+  // preClose, not onClose: open event streams would otherwise stop the server from closing.
+  app.addHook('preClose', async () => sse.closeAll());
 
   return app;
 }

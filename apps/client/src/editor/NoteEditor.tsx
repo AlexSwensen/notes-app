@@ -82,7 +82,7 @@ export function NoteEditor({ note, focusSignal, editable = true }: { note: Local
   }, [editor, focusSignal]);
 
   useEffect(() => {
-    editor?.setEditable(editable);
+    editor?.setEditable(editable, false);
   }, [editor, editable]);
 
   if (!editor) return null;

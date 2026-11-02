@@ -8,13 +8,18 @@
   "engines": {
     "node": ">=24"
   },
+  "overrides": {
+    "glob": "^14.0.3",
+    "minimatch": "^11.0.4"
+  },
   "scripts": {
     "dev:server": "npm run dev -w @notes/server",
     "dev:client": "npm run dev -w @notes/client",
     "build": "npm run build -w @notes/client",
     "start": "npm start -w @notes/server",
-    "test": "npm test -w @notes/server",
+    "test": "npm test --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "lint": "npm run lint -w @notes/client"
+    "lint": "npm run lint --workspaces --if-present"
   }
 }
