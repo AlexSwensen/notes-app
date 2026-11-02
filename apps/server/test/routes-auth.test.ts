@@ -129,7 +129,11 @@ describe('GET /api/me', () => {
 });
 
 describe('GET /api/health', () => {
-  it('responds ok', async () => {
-    assert.deepEqual((await makeApp().inject({ url: '/api/health' })).json(), { ok: true });
+  it('responds ok with the version', async () => {
+    assert.deepEqual((await makeApp({ version: '1.2.3' }).inject({ url: '/api/health' })).json(), { ok: true, version: '1.2.3' });
+  });
+
+  it("reports 'dev' when no version is set", async () => {
+    assert.equal((await makeApp().inject({ url: '/api/health' })).json().version, 'dev');
   });
 });

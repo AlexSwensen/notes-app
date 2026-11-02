@@ -34,6 +34,7 @@ describe('loadConfig', () => {
     assert.equal(config.port, 3000);
     assert.equal(config.host, '0.0.0.0');
     assert.equal(config.staticDir, resolve(import.meta.dirname, '../../client/dist'));
+    assert.match(config.version, /^\d+\.\d+\.\d+/);
   });
 
   it('creates the data directory and a private secret key that is reused', () => {

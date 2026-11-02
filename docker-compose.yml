@@ -1,7 +1,7 @@
 services:
-  notes:
+  sheafly:
     build: .
-    image: notes-app
+    image: sheafly
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -17,3 +17,5 @@ services:
 
 volumes:
   notes-data:
+    # Pinned to the original name so existing data survives renaming the project folder.
+    name: notes-app_notes-data

@@ -145,7 +145,7 @@ export function Sidebar(props: Props) {
       <div className="flex items-center justify-between pt-2.5 pr-2 pb-1.5 pl-3">
         <div className="flex items-center gap-2 min-w-0 text-fg font-medium">
           <span className="size-[22px] rounded bg-accent text-white grid place-items-center text-xs shrink-0">{props.user?.email[0]?.toUpperCase() ?? '?'}</span>
-          <span className="truncate" title={props.user?.email}>{props.user?.email ?? 'Notes'}</span>
+          <span className="truncate" title={props.user?.email}>{props.user?.email ?? 'Sheafly'}</span>
         </div>
         <button className="icon-btn" title="Close sidebar (Ctrl+\)" onClick={props.onClose}>«</button>
       </div>
@@ -198,6 +198,7 @@ export function Sidebar(props: Props) {
         <button className={navButton} onClick={props.onToggleTheme}><span>{props.theme === 'dark' ? '☀️' : '🌙'}</span> {props.theme === 'dark' ? 'Light' : 'Dark'} mode</button>
         <button className={navButton} onClick={props.onLogout}><span>↪</span> Log out</button>
         <SyncIndicator dirtyCount={props.dirtyCount} />
+        <span className="px-2.5 pb-1 text-[11px] text-faint">v{__APP_VERSION__}</span>
       </div>
     </aside>
   );

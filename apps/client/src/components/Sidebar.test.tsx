@@ -62,6 +62,11 @@ describe('Sidebar', () => {
     expect(screen.getByText('No pages yet')).toBeTruthy();
   });
 
+  it('shows the app version', async () => {
+    await renderSidebar([]);
+    expect(screen.getByText('v1.2.3-test')).toBeTruthy();
+  });
+
   it('lists favorites in their own section', async () => {
     await renderSidebar([makeNote({ title: 'Starred', favorite: true })]);
     const favorites = screen.getByText('Favorites').closest('section')!;

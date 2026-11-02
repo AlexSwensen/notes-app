@@ -1,9 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string };
+
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(version) },
   plugins: [
     react(),
     tailwindcss(),
@@ -11,9 +15,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'icon.svg'],
       manifest: {
-        name: 'Notes',
-        short_name: 'Notes',
-        description: 'A fast, synced notes workspace',
+        name: 'Sheafly',
+        short_name: 'Sheafly',
+        description: 'Your notes, gathered and synced across your devices',
         theme_color: '#191919',
         background_color: '#ffffff',
         display: 'standalone',

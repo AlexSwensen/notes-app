@@ -1,4 +1,4 @@
-# 📝 Notes
+# 📝 Sheafly
 
 A Notion-style notes app with **cloud sync across your devices** and **instant full-text search**. Self-hosted: one small Node server with a SQLite database, run with Docker.
 
@@ -45,6 +45,13 @@ Or, for a private setup, use [Tailscale](https://tailscale.com) with `tailscale 
 | `ALLOW_SIGNUP` | `true`                           | `false` disables new accounts. The first account can always be created. |
 | `AUTH_SECRET`  | auto-generated in `DATA_DIR`     | HMAC key for session tokens                                  |
 | `TRUST_PROXY`  | `false`                          | Set `true` behind a reverse proxy so login rate limits use the real client IP |
+| `PUID` / `PGID` | `1000` / `1000`                 | User and group the server runs as. `/data` is chowned to them on start (use `99`/`100` on Unraid). |
+
+### Prebuilt images and Unraid
+
+Every release publishes a multi-arch image (amd64 and arm64) to `ghcr.io/alexswensen/sheafly`, tagged with the version (`1.4.2`, `1.4`, `1`) and `latest`. To use it instead of building locally, replace `build: .` with `image: ghcr.io/alexswensen/sheafly:1` in `docker-compose.yml`.
+
+On Unraid, add `https://github.com/AlexSwensen/notes-app` under **Docker → Template repositories**, or install from [`unraid/sheafly.xml`](unraid/sheafly.xml). Data goes to `/mnt/user/appdata/sheafly`.
 
 ## Development
 
@@ -54,12 +61,36 @@ Requires Node 24+. The server runs TypeScript natively, with no build step. This
 npm install          # installs all workspaces
 npm run dev:server   # API on :3000
 npm run dev:client   # Vite on :5173 (proxies /api to :3000)
-npm test             # server tests
+npm test             # all tests (client: Vitest, server: node:test)
+npm run test:coverage # tests with coverage reports in apps/*/coverage
 npm run typecheck    # type-check every workspace
-npm run lint         # lint the client
+npm run lint         # lint every workspace
 ```
 
-To add a dependency to one app, target its workspace: `npm install <pkg> -w @notes/client`.
+To add a dependency to one app, target its workspace: `npm install <pkg> -w @sheafly/client`.
+
+## Releases
+
+Versions are worked out by [semantic-release](https://semantic-release.gitbook.io), but nothing ships until you say so. When a push to `main` passes CI and contains releasable commits, it:
+
+1. picks the next version from the commit messages,
+2. bumps every `package.json`, updates `CHANGELOG.md`, and commits that as `chore(release): x.y.z`,
+3. tags `vx.y.z` and creates a **draft** GitHub release with the notes.
+
+To ship it, open the draft under **Releases**, edit the notes if you like, and click **Publish release**. That triggers the Publish workflow, which builds the Docker image and pushes it to GHCR.
+
+semantic-release counts versions by git tag, not by whether a release was published. So if you haven't published a draft yet, the next releasable push still makes a new draft with a higher version. Publish the newest one, and delete older drafts you don't want.
+
+Commit messages must follow [Conventional Commits](https://www.conventionalcommits.org). A git hook checks them locally (installed by `npm install`), and CI checks them on pull requests.
+
+| Commit | Release |
+| ------ | ------- |
+| `fix: …` | patch (1.0.**1**) |
+| `feat: …` | minor (1.**1**.0) |
+| `feat!: …` or a `BREAKING CHANGE:` footer | major (**2**.0.0) |
+| `docs:`, `chore:`, `test:`, `refactor:`, `ci:` … | no release |
+
+The running version is shown at the bottom of the sidebar and returned by `GET /api/health`.
 
 ## How sync works
 
@@ -72,17 +103,17 @@ To add a dependency to one app, target its workspace: `npm install <pkg> -w @not
 
 ```
 apps/
-  server/                 @notes/server: Fastify + node:sqlite API, also serves the built client
+  server/                 @sheafly/server: Fastify + node:sqlite API, also serves the built client
     src/
       index.ts            entry point: load config, open the DB, start listening
       config.ts           every environment variable is read here
       app.ts              buildApp(): creates Fastify and registers the routes
-      db.ts               SQLite schema and all queries
+      db/                 Drizzle: connection and queries (index.ts), schema/ (one file per table + relations)
       sse.ts              tracks open live-update connections per user
       auth/               password hashing, session tokens, login rate limit
       routes/             one file per API area: auth, sync, events (SSE), static files
     test/                 API tests (node:test)
-  client/                 @notes/client: React PWA (Vite)
+  client/                 @sheafly/client: React PWA (Vite)
     src/
       main.tsx            entry point
       App.tsx             top-level layout and routing
@@ -91,7 +122,7 @@ apps/
       hooks/              React hooks (routing, theme, note tree)
       lib/                non-UI logic: API client, IndexedDB, note actions, sync, search
 packages/
-  shared/                 @notes/shared: TypeScript types used by both apps (Note, API requests/responses)
+  shared/                 @sheafly/shared: TypeScript types used by both apps (Note, API requests/responses)
 ```
 
-`@notes/shared` contains only types, so it has no build step and adds nothing to the server at runtime. If you change the shape of a note or an API response, change it there and both apps will flag what needs updating (`npm run typecheck`).
+`@sheafly/shared` contains only types, so it has no build step and adds nothing to the server at runtime. If you change the shape of a note or an API response, change it there and both apps will flag what needs updating (`npm run typecheck`).

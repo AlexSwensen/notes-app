@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import type { AuthRequest, AuthResponse, ConfigResponse } from '@notes/shared';
+import type { AuthRequest, AuthResponse, ConfigResponse } from '@sheafly/shared';
 import { api, session } from '../lib/api';
 
 const labelClass = 'flex flex-col gap-1.5 text-[13px] text-muted';

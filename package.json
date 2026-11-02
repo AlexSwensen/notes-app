@@ -1,5 +1,6 @@
 {
-  "name": "notes-app",
+  "name": "sheafly",
+  "version": "0.0.0",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -13,13 +14,19 @@
     "minimatch": "^11.0.4"
   },
   "scripts": {
-    "dev:server": "npm run dev -w @notes/server",
-    "dev:client": "npm run dev -w @notes/client",
-    "build": "npm run build -w @notes/client",
-    "start": "npm start -w @notes/server",
+    "dev:server": "npm run dev -w @sheafly/server",
+    "dev:client": "npm run dev -w @sheafly/client",
+    "build": "npm run build -w @sheafly/client",
+    "start": "npm start -w @sheafly/server",
     "test": "npm test --workspaces --if-present",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present"
+    "lint": "npm run lint --workspaces --if-present",
+    "prepare": "husky || true"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "husky": "^9.1.7"
   }
 }

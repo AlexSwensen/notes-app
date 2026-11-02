@@ -1,5 +1,5 @@
 {
-  "name": "@notes/client",
+  "name": "@sheafly/client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -30,7 +30,7 @@
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
-    "@notes/shared": "*",
+    "@sheafly/shared": "*",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",

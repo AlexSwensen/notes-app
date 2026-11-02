@@ -11,9 +11,25 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # Never cancel a run on main: it may be in the middle of a release.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  commitlint:
+    name: Commit messages
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
   lint:
     name: Lint & typecheck
     runs-on: ubuntu-latest
@@ -28,9 +44,9 @@ jobs:
       - run: npm run typecheck
       - name: Check migrations match the schema
         run: |
-          npm run db:generate -w @notes/server
+          npm run db:generate -w @sheafly/server
           if [ -n "$(git status --porcelain apps/server/drizzle)" ]; then
-            echo "::error::The Drizzle schema has changes without a migration. Run 'npm run db:generate -w @notes/server' and commit the result."
+            echo "::error::The Drizzle schema has changes without a migration. Run 'npm run db:generate -w @sheafly/server' and commit the result."
             exit 1
           fi
 
@@ -46,7 +62,7 @@ jobs:
       - run: npm ci
       - name: Run tests with coverage
         shell: bash # enables pipefail so a failing test run isn't masked by tee
-        run: npm run test:coverage -w @notes/server | tee server-tests.log
+        run: npm run test:coverage -w @sheafly/server | tee server-tests.log
       - name: Coverage summary
         if: always()
         run: |
@@ -75,7 +91,7 @@ jobs:
       - run: npm ci
       - name: Run tests with coverage
         shell: bash # enables pipefail so a failing test run isn't masked by tee
-        run: npm run test:coverage -w @notes/client | tee client-tests.log
+        run: npm run test:coverage -w @sheafly/client | tee client-tests.log
       - name: Coverage summary
         if: always()
         run: |
@@ -111,3 +127,33 @@ jobs:
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  release:
+    name: Draft release
+    needs: [lint, test-server, test-client, build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Run via npx so semantic-release's bundled npm stays out of the project's dependencies.
+        run: >-
+          npx --yes
+          -p semantic-release@25
+          -p @semantic-release/changelog@7
+          -p @semantic-release/git@11
+          -p @semantic-release/exec@7
+          -p conventional-changelog-conventionalcommits@10
+          semantic-release

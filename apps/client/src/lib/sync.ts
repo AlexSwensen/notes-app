@@ -1,4 +1,4 @@
-import type { SyncRequest, SyncResponse } from '@notes/shared';
+import type { SyncRequest, SyncResponse } from '@sheafly/shared';
 import { db, getMeta, setMeta, stripLocal, type Note } from './db';
 import { api, ApiError, session } from './api';
 

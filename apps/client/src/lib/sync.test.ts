@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { SyncRequest } from '@notes/shared';
+import type { SyncRequest } from '@sheafly/shared';
 import { db, getMeta, setMeta } from './db';
 import { session } from './api';
 import { syncEngine } from './sync';

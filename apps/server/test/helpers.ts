@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import type { Note } from '@notes/shared';
+import type { Note } from '@sheafly/shared';
 import { openDb } from '../src/db/index.ts';
 import { buildApp, type AppOptions } from '../src/app.ts';
 

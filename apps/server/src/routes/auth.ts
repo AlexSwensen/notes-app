@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
-import type { AuthResponse, ConfigResponse, User } from '@notes/shared';
+import type { AuthResponse, ConfigResponse, User } from '@sheafly/shared';
 import type { AppContext } from '../app.ts';
 import { hashPassword, verifyPassword } from '../auth/password.ts';
 import { createRateLimiter } from '../auth/rate-limit.ts';

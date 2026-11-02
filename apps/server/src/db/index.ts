@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { and, count, eq, gt, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/node-sqlite';
 import { migrate } from 'drizzle-orm/node-sqlite/migrator';
-import type { Note } from '@notes/shared';
+import type { Note } from '@sheafly/shared';
 import { meta } from './schema/meta.ts';
 import { notes } from './schema/notes.ts';
 import { users } from './schema/users.ts';

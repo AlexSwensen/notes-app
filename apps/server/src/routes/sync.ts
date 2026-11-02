@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import type { Note, SyncResponse } from '@notes/shared';
+import type { Note, SyncResponse } from '@sheafly/shared';
 import type { AppContext } from '../app.ts';
 
 const MAX_CHANGES = 500;

@@ -12,6 +12,7 @@ const app = buildApp({
   staticDir: config.staticDir,
   logger: true,
   trustProxy: config.trustProxy,
+  version: config.version,
 });
 
 await app.listen({ port: config.port, host: config.host });

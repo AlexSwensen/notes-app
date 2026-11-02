@@ -16,6 +16,7 @@ export function loadConfig() {
     trustProxy: process.env.TRUST_PROXY === 'true',
     port: Number(process.env.PORT ?? 3000),
     host: process.env.HOST ?? '0.0.0.0',
+    version: (JSON.parse(readFileSync(join(import.meta.dirname, '../package.json'), 'utf8')) as { version: string }).version,
   };
 }
 

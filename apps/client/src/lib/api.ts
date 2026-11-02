@@ -1,4 +1,4 @@
-import type { User } from '@notes/shared';
+import type { User } from '@sheafly/shared';
 
 export type { User };
 

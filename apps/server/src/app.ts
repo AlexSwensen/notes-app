@@ -14,6 +14,8 @@ export interface AppOptions {
   staticDir?: string;
   logger?: boolean;
   trustProxy?: boolean;
+  /** Reported by `/api/health`. */
+  version?: string;
 }
 
 /** Everything a route module needs, created once in `buildApp`. */
@@ -66,7 +68,7 @@ export function buildApp(opts: AppOptions) {
     },
   };
 
-  app.get('/api/health', async () => ({ ok: true }));
+  app.get('/api/health', async () => ({ ok: true, version: opts.version ?? 'dev' }));
   registerAuthRoutes(app, ctx);
   registerSyncRoutes(app, ctx);
   registerEventRoutes(app, ctx);

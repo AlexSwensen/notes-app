@@ -1,5 +1,6 @@
 {
-  "name": "@notes/server",
+  "name": "@sheafly/server",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -21,7 +22,7 @@
     "fastify": "^5.12.8"
   },
   "devDependencies": {
-    "@notes/shared": "*",
+    "@sheafly/shared": "*",
     "@types/node": "^24.19.2",
     "drizzle-kit": "^1.0.0-rc.5",
     "oxlint": "^1.90.0",

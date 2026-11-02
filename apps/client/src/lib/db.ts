@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { JSONContent } from '@tiptap/react';
-import type { Note as SharedNote } from '@notes/shared';
+import type { Note as SharedNote } from '@sheafly/shared';
 
 /** A note whose content is a TipTap editor document. */
 export type Note = SharedNote<JSONContent | null>;
