@@ -1,3 +1,13 @@
+## [1.1.0](https://github.com/AlexSwensen/sheafly/compare/v1.0.1...v1.1.0) (2026-11-02)
+
+### Features
+
+* **client:** warn when not served over HTTPS ([d20cfb5](https://github.com/AlexSwensen/sheafly/commit/d20cfb5068991ad4a2d68ce7485632be65b47e5b))
+
+### Bug Fixes
+
+* **client:** generate IDs without crypto.randomUUID over plain HTTP ([30f778a](https://github.com/AlexSwensen/sheafly/commit/30f778a69c30ce5d019de2c47de61534942d52dc))
+
 ## [1.0.1](https://github.com/AlexSwensen/sheafly/compare/v1.0.0...v1.0.1) (2026-11-02)
 
 ### Bug Fixes
