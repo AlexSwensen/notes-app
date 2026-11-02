@@ -36,7 +36,7 @@ COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/notes-entrypoint
 RUN mkdir -p /data && chown node:node /data
 VOLUME /data
 EXPOSE 3000
-HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://127.0.0.1:3000/api/health || exit 1
+HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- "http://127.0.0.1:${PORT}/api/health" || exit 1
 WORKDIR /app/apps/server
 # Starts as root only to fix /data ownership, then runs as PUID:PGID (default 1000 = node).
 ENTRYPOINT ["notes-entrypoint"]

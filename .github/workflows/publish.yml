@@ -65,3 +65,13 @@ jobs:
           build-args: VERSION=${{ steps.meta.outputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      # Needs a Docker Hub token with Read, Write, Delete scope; Read & Write can't edit descriptions.
+      - name: Update Docker Hub description
+        if: vars.DOCKERHUB_USERNAME != ''
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ vars.DOCKERHUB_USERNAME }}/sheafly
+          short-description: Self-hosted, Notion-style notes with sync across devices, offline support and search
+          enable-url-completion: true
