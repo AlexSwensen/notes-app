@@ -1,5 +1,6 @@
 import { db, type LocalNote } from './db';
 import { syncEngine } from './sync';
+import { uuid } from './uuid';
 
 function nextTimestamp(prev?: number) {
   // Monotonic per note so last-writer-wins always favours the newest local edit.
@@ -16,7 +17,7 @@ export async function createNote(parentId: string | null = null, init: Partial<L
   const siblings = await siblingsOf(parentId);
   const now = Date.now();
   const note: LocalNote = {
-    id: crypto.randomUUID(),
+    id: uuid(),
     parentId,
     title: '',
     icon: '',
