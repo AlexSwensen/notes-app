@@ -1,13 +1,20 @@
 {
   "name": "notes-app",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "install:all": "npm ci --prefix server && npm ci --prefix client",
-    "dev:server": "npm run dev --prefix server",
-    "dev:client": "npm run dev --prefix client",
-    "build": "npm run build --prefix client",
-    "start": "npm start --prefix server",
-    "test": "npm test --prefix server",
-    "lint": "npm run lint --prefix client"
+    "dev:server": "npm run dev -w @notes/server",
+    "dev:client": "npm run dev -w @notes/client",
+    "build": "npm run build -w @notes/client",
+    "start": "npm start -w @notes/server",
+    "test": "npm test -w @notes/server",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint -w @notes/client"
   }
 }

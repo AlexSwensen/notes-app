@@ -1,0 +1,16 @@
+{
+  // Type-checking only: Node runs the .ts files directly (type stripping), there is no build step.
+  "compilerOptions": {
+    "target": "es2024",
+    "lib": ["ES2024"],
+    "types": ["node"],
+    "module": "nodenext",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src", "test"]
+}

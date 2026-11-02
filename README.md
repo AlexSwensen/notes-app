@@ -41,21 +41,25 @@ Or, for a private setup, use [Tailscale](https://tailscale.com) with `tailscale 
 | Variable       | Default                          | Description                                                  |
 | -------------- | -------------------------------- | ------------------------------------------------------------ |
 | `PORT`         | `3000`                           | HTTP port                                                    |
-| `DATA_DIR`     | `/data` (Docker), `server/data`  | Where `notes.db` and `secret.key` live                       |
+| `DATA_DIR`     | `/data` (Docker), `apps/server/data` | Where `notes.db` and `secret.key` live                   |
 | `ALLOW_SIGNUP` | `true`                           | `false` disables new accounts. The first account can always be created. |
 | `AUTH_SECRET`  | auto-generated in `DATA_DIR`     | HMAC key for session tokens                                  |
 | `TRUST_PROXY`  | `false`                          | Set `true` behind a reverse proxy so login rate limits use the real client IP |
 
 ## Development
 
-Requires Node 24+. The server runs TypeScript natively, with no build step.
+Requires Node 24+. The server runs TypeScript natively, with no build step. This is an [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) monorepo: run every command from the repo root, and there is a single `package-lock.json`.
 
 ```bash
-npm run install:all
+npm install          # installs all workspaces
 npm run dev:server   # API on :3000
 npm run dev:client   # Vite on :5173 (proxies /api to :3000)
 npm test             # server tests
+npm run typecheck    # type-check every workspace
+npm run lint         # lint the client
 ```
+
+To add a dependency to one app, target its workspace: `npm install <pkg> -w @notes/client`.
 
 ## How sync works
 
@@ -67,6 +71,27 @@ npm test             # server tests
 ## Project layout
 
 ```
-server/   Fastify + node:sqlite API (auth, sync, SSE) and static hosting
-client/   React + TipTap editor, Dexie (IndexedDB), MiniSearch, vite-plugin-pwa
+apps/
+  server/                 @notes/server: Fastify + node:sqlite API, also serves the built client
+    src/
+      index.ts            entry point: load config, open the DB, start listening
+      config.ts           every environment variable is read here
+      app.ts              buildApp(): creates Fastify and registers the routes
+      db.ts               SQLite schema and all queries
+      sse.ts              tracks open live-update connections per user
+      auth/               password hashing, session tokens, login rate limit
+      routes/             one file per API area: auth, sync, events (SSE), static files
+    test/                 API tests (node:test)
+  client/                 @notes/client: React PWA (Vite)
+    src/
+      main.tsx            entry point
+      App.tsx             top-level layout and routing
+      components/         UI: sidebar, page view, search palette, trash, login
+      editor/             TipTap editor and the "/" command menu
+      hooks/              React hooks (routing, theme, note tree)
+      lib/                non-UI logic: API client, IndexedDB, note actions, sync, search
+packages/
+  shared/                 @notes/shared: TypeScript types used by both apps (Note, API requests/responses)
 ```
+
+`@notes/shared` contains only types, so it has no build step and adds nothing to the server at runtime. If you change the shape of a note or an API response, change it there and both apps will flag what needs updating (`npm run typecheck`).
