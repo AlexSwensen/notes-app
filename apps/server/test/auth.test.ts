@@ -66,6 +66,24 @@ describe('tokens', () => {
     t.mock.timers.tick(2 * 24 * 60 * 60 * 1000);
     assert.equal(tokens.verify(token), null);
   });
+
+  it('keeps 2FA challenges and sessions separate', () => {
+    const session = tokens.issue('user-1');
+    const challenge = tokens.issueChallenge('user-1');
+    assert.equal(tokens.verifyChallenge(challenge), 'user-1');
+    // A challenge is not a session, and a session is not a challenge.
+    assert.equal(tokens.verify(challenge), null);
+    assert.equal(tokens.verifyChallenge(session), null);
+  });
+
+  it('expires a 2FA challenge after 10 minutes', (t) => {
+    t.mock.timers.enable({ apis: ['Date'], now: 0 });
+    const challenge = tokens.issueChallenge('user-1');
+    t.mock.timers.tick(9 * 60 * 1000);
+    assert.equal(tokens.verifyChallenge(challenge), 'user-1');
+    t.mock.timers.tick(2 * 60 * 1000);
+    assert.equal(tokens.verifyChallenge(challenge), null);
+  });
 });
 
 describe('rate limiter', () => {

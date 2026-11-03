@@ -14,6 +14,7 @@ import { SearchPalette } from './components/SearchPalette';
 import { Trash } from './components/Trash';
 import { Home } from './components/Home';
 import { DatabaseError } from './components/DatabaseError';
+import { ProfileDialog } from './components/ProfileDialog';
 
 const NO_NOTES: LocalNote[] = [];
 
@@ -31,6 +32,8 @@ function Workspace() {
   const hash = useHash();
   const [theme, toggleTheme] = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [user, setUser] = useState(() => session.user);
   const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 768);
   const [expanded, setExpandedState] = useState<Set<string>>(
     () => new Set(JSON.parse(localStorage.getItem('notes.expanded') ?? '[]') as string[]),
@@ -92,6 +95,7 @@ function Workspace() {
     navigate(h);
     if (window.innerWidth <= 768) setSidebarOpen(false);
   };
+  const closeAccount = useCallback(() => setAccountOpen(false), []);
 
   let main;
   if (route === 'trash') main = <Trash notes={notes} byId={byId} onNavigate={go} />;
@@ -110,12 +114,13 @@ function Workspace() {
           favorites={favorites}
           currentId={currentId}
           route={route}
-          user={session.user}
+          user={user}
           dirtyCount={dirtyCount}
           theme={theme}
           onToggleTheme={toggleTheme}
           onNavigate={go}
           onSearch={() => setSearchOpen(true)}
+          onOpenAccount={() => setAccountOpen(true)}
           onLogout={logout}
           onClose={() => setSidebarOpen(false)}
           expanded={expanded}
@@ -129,6 +134,7 @@ function Workspace() {
         {main}
       </main>
       {searchOpen && <SearchPalette notes={notes} byId={byId} onNavigate={go} onClose={() => setSearchOpen(false)} />}
+      {accountOpen && user && <ProfileDialog user={user} onUserChange={setUser} onClose={closeAccount} />}
     </div>
   );
 }

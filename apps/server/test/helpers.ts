@@ -22,6 +22,10 @@ export async function signup(app: TestApp, email = 'a@example.com', password = '
   return res.json().token as string;
 }
 
+export function auth(token: string) {
+  return { authorization: `Bearer ${token}` };
+}
+
 export function sync(app: TestApp, token: string, payload: object) {
   return app.inject({ method: 'POST', url: '/api/sync', headers: { authorization: `Bearer ${token}` }, payload });
 }

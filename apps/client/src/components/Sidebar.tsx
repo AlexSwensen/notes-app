@@ -16,6 +16,7 @@ interface Props {
   onToggleTheme: () => void;
   onNavigate: (hash: string) => void;
   onSearch: () => void;
+  onOpenAccount: () => void;
   onLogout: () => void;
   onClose: () => void;
   expanded: Set<string>;
@@ -143,10 +144,14 @@ export function Sidebar(props: Props) {
   return (
     <aside className="w-[260px] shrink-0 bg-sidebar border-r border-line flex flex-col text-sm text-muted select-none max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-60 max-md:w-[82vw] max-md:max-w-[300px] max-md:shadow-pop max-md:pt-[env(safe-area-inset-top)]">
       <div className="flex items-center justify-between pt-2.5 pr-2 pb-1.5 pl-3">
-        <div className="flex items-center gap-2 min-w-0 text-fg font-medium">
+        <button
+          className="flex items-center gap-2 min-w-0 text-fg font-medium rounded px-1 -ml-1 py-0.5 hover:bg-hover"
+          title="Account settings"
+          onClick={props.onOpenAccount}
+        >
           <span className="size-[22px] rounded bg-accent text-white grid place-items-center text-xs shrink-0">{props.user?.email[0]?.toUpperCase() ?? '?'}</span>
-          <span className="truncate" title={props.user?.email}>{props.user?.email ?? 'Sheafly'}</span>
-        </div>
+          <span className="truncate">{props.user?.email ?? 'Sheafly'}</span>
+        </button>
         <button className="icon-btn" title="Close sidebar (Ctrl+\)" onClick={props.onClose}>«</button>
       </div>
 
