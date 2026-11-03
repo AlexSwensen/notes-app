@@ -1,3 +1,9 @@
+## [1.2.2](https://github.com/AlexSwensen/sheafly/compare/v1.2.1...v1.2.2) (2026-11-03)
+
+### Bug Fixes
+
+* each command element is now its own file ([4f622a0](https://github.com/AlexSwensen/sheafly/commit/4f622a0da79f795ae3b3ee79d84f7d6be1bcd384))
+
 ## [1.2.1](https://github.com/AlexSwensen/sheafly/compare/v1.2.0...v1.2.1) (2026-11-02)
 
 ### Bug Fixes
