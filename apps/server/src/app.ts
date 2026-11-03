@@ -3,6 +3,7 @@ import type { Db } from './db/index.ts';
 import { createTokenService, type TokenService } from './auth/tokens.ts';
 import { createSseHub, type SseHub } from './sse.ts';
 import { registerAuthRoutes } from './routes/auth.ts';
+import { registerTwoFactorRoutes } from './routes/two-factor.ts';
 import { registerSyncRoutes } from './routes/sync.ts';
 import { registerEventRoutes } from './routes/events.ts';
 import { registerStaticRoutes } from './routes/static.ts';
@@ -70,6 +71,7 @@ export function buildApp(opts: AppOptions) {
 
   app.get('/api/health', async () => ({ ok: true, version: opts.version ?? 'dev' }));
   registerAuthRoutes(app, ctx);
+  registerTwoFactorRoutes(app, ctx);
   registerSyncRoutes(app, ctx);
   registerEventRoutes(app, ctx);
   registerStaticRoutes(app, opts.staticDir);

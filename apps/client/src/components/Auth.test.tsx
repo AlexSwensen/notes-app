@@ -88,3 +88,58 @@ describe('Auth', () => {
     await waitFor(() => expect(screen.queryByRole('button', { name: /Sign up/ })).toBeNull());
   });
 });
+
+describe('Auth with two-factor', () => {
+  const challenged = () => jsonResponse({ twoFactorRequired: true, challenge: 'chal' });
+  const authed = () => jsonResponse({ token: 'tok', user: { id: 'u1', email: 'a@example.com' } });
+
+  it('asks for a code after the password, then logs in with it', async () => {
+    const fetchMock = mockApi((path) => (path === '/api/auth/login' ? challenged() : authed()));
+    const onAuthed = vi.fn();
+    render(<Auth onAuthed={onAuthed} />);
+
+    const user = await fillIn('a@example.com', 'password123');
+    await user.click(screen.getByRole('button', { name: 'Log in' }));
+
+    expect(await screen.findByRole('heading', { name: 'Two-factor authentication' })).toBeTruthy();
+    expect(onAuthed).not.toHaveBeenCalled();
+    expect(session.token).toBeNull();
+
+    await user.type(screen.getByLabelText('Verification code'), '123456');
+    await user.click(screen.getByRole('button', { name: 'Verify' }));
+
+    await waitFor(() => expect(onAuthed).toHaveBeenCalledOnce());
+    const [path, init] = fetchMock.mock.calls.at(-1)!;
+    expect(path).toBe('/api/auth/login/2fa');
+    expect(JSON.parse(init!.body as string)).toEqual({ challenge: 'chal', code: '123456' });
+    expect(session.token).toBe('tok');
+  });
+
+  it('accepts a recovery code instead', async () => {
+    const fetchMock = mockApi((path) => (path === '/api/auth/login' ? challenged() : authed()));
+    render(<Auth onAuthed={() => {}} />);
+
+    const user = await fillIn('a@example.com', 'password123');
+    await user.click(screen.getByRole('button', { name: 'Log in' }));
+    await user.click(await screen.findByRole('button', { name: /Use a recovery code/ }));
+    await user.type(screen.getByLabelText('Recovery code'), 'abcde-12345');
+    await user.click(screen.getByRole('button', { name: 'Verify' }));
+
+    await waitFor(() => expect(session.token).toBe('tok'));
+    expect(JSON.parse(fetchMock.mock.calls.at(-1)![1]!.body as string).code).toBe('abcde-12345');
+  });
+
+  it('shows an error for a wrong code and lets the user go back', async () => {
+    mockApi((path) => (path === '/api/auth/login' ? challenged() : jsonResponse({ error: 'That code is not valid' }, 401)));
+    render(<Auth onAuthed={() => {}} />);
+
+    const user = await fillIn('a@example.com', 'password123');
+    await user.click(screen.getByRole('button', { name: 'Log in' }));
+    await user.type(await screen.findByLabelText('Verification code'), '000000');
+    await user.click(screen.getByRole('button', { name: 'Verify' }));
+
+    expect((await screen.findByRole('alert')).textContent).toBe('That code is not valid');
+    await user.click(screen.getByRole('button', { name: 'Back to login' }));
+    expect(screen.getByRole('heading', { name: 'Welcome back' })).toBeTruthy();
+  });
+});

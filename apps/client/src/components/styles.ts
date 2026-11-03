@@ -5,3 +5,4 @@ export const breadcrumbs = 'flex items-center min-w-0 text-sm overflow-hidden wh
 export const crumbCurrent = 'px-1.5 py-0.5 overflow-hidden text-ellipsis';
 export const pageBody = 'max-w-[760px] mx-auto pt-12 px-14 pb-[30vh] max-md:pt-6 max-md:px-5 max-md:pb-[40vh]';
 export const pageHeading = 'text-[32px] font-bold mt-2 mb-5';
+export const secondaryBtn = 'border border-line rounded-md px-3 py-[7px] text-sm hover:bg-hover';

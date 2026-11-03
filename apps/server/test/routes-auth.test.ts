@@ -1,8 +1,10 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { makeApp, signup } from './helpers.ts';
+import { makeApp, signup, auth } from './helpers.ts';
 
 const post = (app: ReturnType<typeof makeApp>, url: string, payload: unknown) => app.inject({ method: 'POST', url, payload: payload as object });
+const postAuth = (app: ReturnType<typeof makeApp>, url: string, payload: unknown, token: string) =>
+  app.inject({ method: 'POST', url, payload: payload as object, headers: auth(token) });
 
 describe('GET /api/config', () => {
   it('reports sign-ups as open when allowed', async () => {
@@ -135,5 +137,69 @@ describe('GET /api/health', () => {
 
   it("reports 'dev' when no version is set", async () => {
     assert.equal((await makeApp().inject({ url: '/api/health' })).json().version, 'dev');
+  });
+});
+
+describe('POST /api/me/profile', () => {
+  it('requires a session', async () => {
+    assert.equal((await post(makeApp(), '/api/me/profile', { email: 'x@example.com' })).statusCode, 401);
+  });
+
+  it('updates the email and reflects it on /api/me', async () => {
+    const app = makeApp();
+    const token = await signup(app, 'old@example.com');
+    const res = await postAuth(app, '/api/me/profile', { email: 'new@example.com' }, token);
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.json().email, 'new@example.com');
+    assert.equal((await app.inject({ url: '/api/me', headers: auth(token) })).json().email, 'new@example.com');
+    // The new email can log in; the old one cannot.
+    assert.equal((await post(app, '/api/auth/login', { email: 'new@example.com', password: 'password123' })).statusCode, 200);
+    assert.equal((await post(app, '/api/auth/login', { email: 'old@example.com', password: 'password123' })).statusCode, 401);
+  });
+
+  it('rejects an invalid email', async () => {
+    const app = makeApp();
+    const token = await signup(app);
+    assert.equal((await postAuth(app, '/api/me/profile', { email: 'nope' }, token)).statusCode, 400);
+  });
+
+  it('rejects an email already used by another account', async () => {
+    const app = makeApp();
+    await signup(app, 'taken@example.com');
+    const token = await signup(app, 'me@example.com');
+    assert.equal((await postAuth(app, '/api/me/profile', { email: 'TAKEN@example.com' }, token)).statusCode, 409);
+  });
+
+  it('allows saving the same email unchanged', async () => {
+    const app = makeApp();
+    const token = await signup(app, 'me@example.com');
+    assert.equal((await postAuth(app, '/api/me/profile', { email: 'me@example.com' }, token)).statusCode, 200);
+  });
+});
+
+describe('POST /api/me/password', () => {
+  it('requires a session', async () => {
+    assert.equal((await post(makeApp(), '/api/me/password', { currentPassword: 'password123', newPassword: 'newpassword' })).statusCode, 401);
+  });
+
+  it('changes the password when the current one is correct', async () => {
+    const app = makeApp();
+    const token = await signup(app);
+    const res = await postAuth(app, '/api/me/password', { currentPassword: 'password123', newPassword: 'brand-new-pass' }, token);
+    assert.equal(res.statusCode, 200);
+    assert.equal((await post(app, '/api/auth/login', { email: 'a@example.com', password: 'brand-new-pass' })).statusCode, 200);
+    assert.equal((await post(app, '/api/auth/login', { email: 'a@example.com', password: 'password123' })).statusCode, 401);
+  });
+
+  it('rejects a wrong current password', async () => {
+    const app = makeApp();
+    const token = await signup(app);
+    assert.equal((await postAuth(app, '/api/me/password', { currentPassword: 'wrong', newPassword: 'brand-new-pass' }, token)).statusCode, 401);
+  });
+
+  it('rejects a too-short new password', async () => {
+    const app = makeApp();
+    const token = await signup(app);
+    assert.equal((await postAuth(app, '/api/me/password', { currentPassword: 'password123', newPassword: 'short' }, token)).statusCode, 400);
   });
 });

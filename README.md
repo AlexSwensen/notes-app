@@ -15,6 +15,8 @@ A Notion-style notes app with **cloud sync across your devices** and **instant f
 - **Cloud sync**: changes sync automatically and appear live on your other open devices (Server-Sent Events)
 - **Offline-first**: notes live in IndexedDB, so you can edit offline and changes sync when you reconnect. It can be installed as an app (PWA) on desktop, iOS and Android.
 - **Trash**: restore pages, or delete them permanently
+- **Account settings**: click your name at the top of the sidebar to change your email or password
+- **Two-factor authentication**: scan a QR code with any authenticator app (Google Authenticator, 1Password, Authy …). Add as many named devices as you like and remove them any time. One-time recovery codes are shown once when you turn it on; download them and keep them safe, because without them you cannot get back into your account if you lose every device.
 - Light and dark mode, responsive mobile layout
 
 Contributions are welcome: bug reports, ideas and pull requests all help. See [Contributing](#contributing).
@@ -126,6 +128,13 @@ The running version is shown at the bottom of the sidebar and returned by `GET /
 - The server pushes a `change` event over SSE to your other connected devices, and they pull immediately. Clients also sync on startup, on reconnect, when the tab regains focus, and every 60 seconds.
 - Deletions are tombstones (`purged`), so they propagate to every device.
 
+## How two-factor login works
+
+- Authenticator devices are standard TOTP (RFC 6238: SHA-1, 6 digits, 30 s), implemented in `apps/server/src/auth/totp.ts` with no extra dependencies. A device only counts once its first code is verified, and two-factor is on while at least one confirmed device exists.
+- With two-factor on, `POST /api/auth/login` doesn't return a session. It returns `{ twoFactorRequired: true, challenge }`, a signed token valid for 10 minutes that can't be used as a session. The client then sends the challenge with a code to `POST /api/auth/login/2fa`.
+- That code can be from any confirmed device, or one of the 10 recovery codes. Recovery codes are stored as SHA-256 hashes and each works once. They're generated when the first device is confirmed and can be regenerated (with your password) from account settings. Removing the last device turns two-factor off and deletes the recovery codes.
+- If someone loses every device and every recovery code, an admin can turn two-factor off by deleting the user's rows from the `two_factor_devices` table in `notes.db`.
+
 ## Project layout
 
 ```
@@ -137,14 +146,14 @@ apps/
       app.ts              buildApp(): creates Fastify and registers the routes
       db/                 Drizzle: connection and queries (index.ts), schema/ (one file per table + relations)
       sse.ts              tracks open live-update connections per user
-      auth/               password hashing, session tokens, login rate limit
-      routes/             one file per API area: auth, sync, events (SSE), static files
+      auth/               password hashing, session and 2FA challenge tokens, TOTP, recovery codes, login rate limit
+      routes/             one file per API area: auth (login, profile), two-factor, sync, events (SSE), static files
     test/                 API tests (node:test)
   client/                 @sheafly/client: React PWA (Vite)
     src/
       main.tsx            entry point
       App.tsx             top-level layout and routing
-      components/         UI: sidebar, page view, search palette, trash, login
+      components/         UI: sidebar, page view, search palette, trash, login, account settings
       editor/             TipTap editor and the "/" command menu
       hooks/              React hooks (routing, theme, note tree)
       lib/                non-UI logic: API client, IndexedDB, note actions, sync, search

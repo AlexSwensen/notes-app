@@ -26,6 +26,7 @@ function Harness({ notes, initiallyExpanded = [], ...overrides }: { notes: Local
       onToggleTheme={() => {}}
       onNavigate={() => {}}
       onSearch={() => {}}
+      onOpenAccount={() => {}}
       onLogout={() => {}}
       onClose={() => {}}
       expanded={expanded}
@@ -55,6 +56,13 @@ describe('Sidebar', () => {
     expect(screen.getByText('Alpha')).toBeTruthy();
     expect(screen.getByText('Beta')).toBeTruthy();
     expect(screen.queryByText('Favorites')).toBeNull();
+  });
+
+  it('opens account settings when the account name is clicked', async () => {
+    const onOpenAccount = vi.fn();
+    await renderSidebar([], { onOpenAccount });
+    await userEvent.setup().click(screen.getByRole('button', { name: /ada@example.com/ }));
+    expect(onOpenAccount).toHaveBeenCalledOnce();
   });
 
   it('says when there are no pages yet', async () => {
