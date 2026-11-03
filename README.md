@@ -1,5 +1,8 @@
 # 📝 Sheafly
 
+
+<img width="1844" height="899" alt="Sheafly app after login" src="https://github.com/user-attachments/assets/539f59df-c66a-4b8d-ab02-1b0bb033a2f6" />
+
 A Notion-style notes app with **cloud sync across your devices** and **instant full-text search**. Self-hosted: one small Node server with a SQLite database, run with Docker.
 
 ## Features
