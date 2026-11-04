@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/AlexSwensen/sheafly/compare/v1.2.2...v1.2.3) (2026-11-04)
+
+### Bug Fixes
+
+* **node:** update workflows for node 26 ([f5af408](https://github.com/AlexSwensen/sheafly/commit/f5af408b72e50445d11677b432afca3dd293a527))
+* **node:** upgrade node and prep for better auth ([cb9dee3](https://github.com/AlexSwensen/sheafly/commit/cb9dee366f12eec7a88700a293fb03a5f8d84714))
+
 ## [1.2.2](https://github.com/AlexSwensen/sheafly/compare/v1.2.1...v1.2.2) (2026-11-03)
 
 ### Bug Fixes
