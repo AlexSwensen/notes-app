@@ -2,7 +2,7 @@
 # workspace's package.json first (cached layer), then the source.
 
 # --- Build the PWA client ---
-FROM node:24-slim AS client
+FROM node:26-slim AS client
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY apps/client/package.json apps/client/
@@ -14,7 +14,7 @@ COPY apps/client apps/client
 RUN npm run build -w @sheafly/client
 
 # --- Runtime: Node server (uses built-in node:sqlite, no native deps) ---
-FROM node:24-alpine
+FROM node:26-alpine
 ARG VERSION=dev
 LABEL org.opencontainers.image.title="Sheafly" \
       org.opencontainers.image.version="${VERSION}"
