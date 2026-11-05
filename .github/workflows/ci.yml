@@ -44,9 +44,9 @@ jobs:
       - run: npm run typecheck
       - name: Check migrations match the schema
         run: |
-          npm run db:generate -w @sheafly/server
-          if [ -n "$(git status --porcelain apps/server/drizzle)" ]; then
-            echo "::error::The Drizzle schema has changes without a migration. Run 'npm run db:generate -w @sheafly/server' and commit the result."
+          npm run db:generate -w @sheafly/db
+          if [ -n "$(git status --porcelain packages/db/drizzle)" ]; then
+            echo "::error::The Drizzle schema has changes without a migration. Run 'npm run db:generate -w @sheafly/db' and commit the result."
             exit 1
           fi
 

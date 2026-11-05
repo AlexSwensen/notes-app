@@ -1,5 +1,5 @@
 import Fastify, { type FastifyRequest, type FastifyReply } from 'fastify';
-import type { Db } from './db/index.ts';
+import type { Db } from '@sheafly/db';
 import { createTokenService, type TokenService } from './auth/tokens.ts';
 import { createSseHub, type SseHub } from './sse.ts';
 import { registerAuthRoutes } from './routes/auth.ts';

@@ -10,14 +10,15 @@
     "test:coverage": "mkdir -p coverage && node --test --experimental-test-coverage --test-coverage-include=\"src/**\" --test-coverage-exclude=src/index.ts --test-coverage-lines=95 --test-coverage-branches=90 --test-coverage-functions=85 --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info \"test/**/*.test.ts\"",
     "lint": "oxlint",
     "typecheck": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate",
-    "db:studio": "drizzle-kit studio"
+    "db:generate": "npm run db:generate -w @sheafly/db",
+    "db:studio": "npm run db:studio -w @sheafly/db"
   },
   "engines": {
     "node": ">=24"
   },
   "dependencies": {
     "@fastify/static": "^10.1.8",
+    "@sheafly/db": "*",
     "drizzle-orm": "^1.0.0-rc.5",
     "fastify": "^5.12.8"
   },

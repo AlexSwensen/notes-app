@@ -8,8 +8,10 @@ COPY package.json package-lock.json ./
 COPY apps/client/package.json apps/client/
 COPY apps/server/package.json apps/server/
 COPY packages/shared/package.json packages/shared/
+COPY packages/db/package.json packages/db/
 RUN npm ci
 COPY packages/shared packages/shared
+COPY packages/db packages/db
 COPY apps/client apps/client
 RUN npm run build -w @sheafly/client
 
@@ -28,9 +30,10 @@ COPY package.json package-lock.json ./
 COPY apps/client/package.json apps/client/
 COPY apps/server/package.json apps/server/
 COPY packages/shared/package.json packages/shared/
+COPY packages/db/package.json packages/db/
 RUN npm ci --omit=dev -w @sheafly/server && npm cache clean --force
 COPY apps/server/src apps/server/src
-COPY apps/server/drizzle apps/server/drizzle
+COPY packages/db packages/db
 COPY --from=client /app/apps/client/dist apps/client/dist
 COPY --chmod=755 docker-entrypoint.sh /usr/local/bin/notes-entrypoint
 RUN mkdir -p /data && chown node:node /data

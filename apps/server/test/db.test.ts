@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdtempSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { openDb } from '../src/db/index.ts';
+import { openDb, type Db } from '@sheafly/db';
 import { note } from './helpers.ts';
 
 function dbWithUsers(...ids: string[]) {

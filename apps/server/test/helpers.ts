@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import type { Note } from '@sheafly/shared';
-import { openDb } from '../src/db/index.ts';
+import { openDb } from '@sheafly/db';
 import { buildApp, type AppOptions } from '../src/app.ts';
 
 export function makeApp(opts: Partial<AppOptions> = {}) {

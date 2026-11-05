@@ -130,12 +130,11 @@ The running version is shown at the bottom of the sidebar and returned by `GET /
 
 ```
 apps/
-  server/                 @sheafly/server: Fastify + node:sqlite API, also serves the built client
+  server/                 @sheafly/server: Fastify API, also serves the built client
     src/
       index.ts            entry point: load config, open the DB, start listening
       config.ts           every environment variable is read here
       app.ts              buildApp(): creates Fastify and registers the routes
-      db/                 Drizzle: connection and queries (index.ts), schema/ (one file per table + relations)
       sse.ts              tracks open live-update connections per user
       auth/               password hashing, session tokens, login rate limit
       routes/             one file per API area: auth, sync, events (SSE), static files
@@ -149,6 +148,8 @@ apps/
       hooks/              React hooks (routing, theme, note tree)
       lib/                non-UI logic: API client, IndexedDB, note actions, sync, search
 packages/
+  db/                     @sheafly/db: Drizzle ORM schema, migrations, connection logic
+  shared/                 @sheafly/shared: TypeScript types used by both apps (Note, API requests/responses)
   shared/                 @sheafly/shared: TypeScript types used by both apps (Note, API requests/responses)
 ```
 
