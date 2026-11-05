@@ -28,7 +28,9 @@ describe('slash commands', () => {
     await user.keyboard('/');
 
     await waitFor(() => expect(screen.getByText('Basic blocks')).toBeTruthy());
-    expect(screen.getAllByRole('option').map((b) => b.textContent)).toContain('H1Heading 1Big section heading');
+    expect(screen.getAllByRole('option').map((b) => b.textContent)).toContain(
+      'H1Heading 1Big section heading',
+    );
   });
 
   it('filters commands by title and keyword', async () => {

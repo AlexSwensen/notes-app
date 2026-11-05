@@ -34,6 +34,8 @@ describe('DatabaseError', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Reset local data' }));
     expect((await screen.findByRole('alert')).textContent).toContain("Clear this site's data");
-    expect((screen.getByRole('button', { name: 'Reset local data' }) as HTMLButtonElement).disabled).toBe(false);
+    expect(
+      (screen.getByRole('button', { name: 'Reset local data' }) as HTMLButtonElement).disabled,
+    ).toBe(false);
   });
 });

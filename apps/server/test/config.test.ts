@@ -5,7 +5,15 @@ import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { loadConfig } from '../src/config.ts';
 
-const VARS = ['DATA_DIR', 'AUTH_SECRET', 'ALLOW_SIGNUP', 'STATIC_DIR', 'TRUST_PROXY', 'PORT', 'HOST'];
+const VARS = [
+  'DATA_DIR',
+  'AUTH_SECRET',
+  'ALLOW_SIGNUP',
+  'STATIC_DIR',
+  'TRUST_PROXY',
+  'PORT',
+  'HOST',
+];
 
 describe('loadConfig', () => {
   let saved: Record<string, string | undefined>;
@@ -53,7 +61,11 @@ describe('loadConfig', () => {
 
   it('reads the remaining settings from the environment', () => {
     Object.assign(process.env, {
-      ALLOW_SIGNUP: 'false', TRUST_PROXY: 'true', PORT: '8080', HOST: '127.0.0.1', STATIC_DIR: '/srv/www',
+      ALLOW_SIGNUP: 'false',
+      TRUST_PROXY: 'true',
+      PORT: '8080',
+      HOST: '127.0.0.1',
+      STATIC_DIR: '/srv/www',
     });
     const config = loadConfig();
     assert.equal(config.allowSignup, false);

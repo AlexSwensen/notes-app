@@ -48,7 +48,10 @@ function TitleInput({ note, onEnter }: { note: LocalNote; onEnter: () => void })
         updateNote(note.id, { title });
       }}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || (e.key === 'ArrowDown' && e.currentTarget.selectionStart === value.length)) {
+        if (
+          e.key === 'Enter' ||
+          (e.key === 'ArrowDown' && e.currentTarget.selectionStart === value.length)
+        ) {
           e.preventDefault();
           onEnter();
         }
@@ -62,7 +65,11 @@ export function PageView({ note, byId, subpages, onNavigate }: Props) {
   const [focusEditor, setFocusEditor] = useState(0);
 
   const crumbs: LocalNote[] = [];
-  for (let p = note.parentId ? byId.get(note.parentId) : undefined; p && crumbs.length < 20; p = p.parentId ? byId.get(p.parentId) : undefined) {
+  for (
+    let p = note.parentId ? byId.get(note.parentId) : undefined;
+    p && crumbs.length < 20;
+    p = p.parentId ? byId.get(p.parentId) : undefined
+  ) {
     crumbs.unshift(p);
   }
 
@@ -72,19 +79,43 @@ export function PageView({ note, byId, subpages, onNavigate }: Props) {
         <div className={breadcrumbs}>
           {crumbs.map((c) => (
             <span key={c.id}>
-              <button className="px-1.5 py-0.5 rounded max-w-40 truncate hover:bg-hover" onClick={() => onNavigate(`#/p/${c.id}`)}>{c.icon && `${c.icon} `}{noteTitle(c)}</button>
+              <button
+                className="px-1.5 py-0.5 rounded max-w-40 truncate hover:bg-hover"
+                onClick={() => onNavigate(`#/p/${c.id}`)}
+              >
+                {c.icon && `${c.icon} `}
+                {noteTitle(c)}
+              </button>
               <span className="text-faint mx-0.5">/</span>
             </span>
           ))}
-          <span className={crumbCurrent}>{note.icon && `${note.icon} `}{noteTitle(note)}</span>
+          <span className={crumbCurrent}>
+            {note.icon && `${note.icon} `}
+            {noteTitle(note)}
+          </span>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <span className="text-muted text-xs max-md:hidden">Edited {new Date(note.updatedAt).toLocaleString()}</span>
-          <button className="icon-btn" title={note.favorite ? 'Remove from favorites' : 'Add to favorites'} onClick={() => updateNote(note.id, { favorite: !note.favorite })}>
+          <span className="text-muted text-xs max-md:hidden">
+            Edited {new Date(note.updatedAt).toLocaleString()}
+          </span>
+          <button
+            className="icon-btn"
+            title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
+            onClick={() => updateNote(note.id, { favorite: !note.favorite })}
+          >
             {note.favorite ? '★' : '☆'}
           </button>
           {!note.trashed && (
-            <button className="icon-btn" title="Move to trash" onClick={() => { trashNote(note.id); onNavigate('#/'); }}>🗑</button>
+            <button
+              className="icon-btn"
+              title="Move to trash"
+              onClick={() => {
+                trashNote(note.id);
+                onNavigate('#/');
+              }}
+            >
+              🗑
+            </button>
           )}
         </div>
       </header>
@@ -92,14 +123,24 @@ export function PageView({ note, byId, subpages, onNavigate }: Props) {
       {note.trashed && (
         <div className="bg-danger text-white text-center p-2 text-sm">
           This page is in the trash.
-          <button className="ml-3 border border-white/60 rounded px-2.5 py-0.5" onClick={() => restoreNote(note.id)}>Restore</button>
+          <button
+            className="ml-3 border border-white/60 rounded px-2.5 py-0.5"
+            onClick={() => restoreNote(note.id)}
+          >
+            Restore
+          </button>
         </div>
       )}
 
       <div className={`group/body ${pageBody}`}>
         <div className="relative min-h-8">
           {note.icon ? (
-            <button className="text-[72px] leading-none rounded-md p-1 -ml-1 hover:bg-hover" onClick={() => setPicker(true)}>{note.icon}</button>
+            <button
+              className="text-[72px] leading-none rounded-md p-1 -ml-1 hover:bg-hover"
+              onClick={() => setPicker(true)}
+            >
+              {note.icon}
+            </button>
           ) : (
             <button
               className="text-sm text-faint px-2 py-1 rounded -ml-2 opacity-0 transition-opacity duration-150 group-hover/body:opacity-100 focus:opacity-100 hover:bg-hover"
@@ -123,12 +164,22 @@ export function PageView({ note, byId, subpages, onNavigate }: Props) {
 
         <div className="mt-6 flex flex-col items-start gap-0.5">
           {subpages.map((c) => (
-            <button key={c.id} className="px-1.5 py-1 rounded -ml-1.5 hover:bg-hover" onClick={() => onNavigate(`#/p/${c.id}`)}>
-              <span>{c.icon || '📄'}</span> <span className="underline decoration-faint underline-offset-3">{noteTitle(c)}</span>
+            <button
+              key={c.id}
+              className="px-1.5 py-1 rounded -ml-1.5 hover:bg-hover"
+              onClick={() => onNavigate(`#/p/${c.id}`)}
+            >
+              <span>{c.icon || '📄'}</span>{' '}
+              <span className="underline decoration-faint underline-offset-3">{noteTitle(c)}</span>
             </button>
           ))}
           {!note.trashed && (
-            <button className="text-faint text-sm px-1.5 py-1 -ml-1.5 rounded hover:bg-hover hover:text-muted" onClick={async () => onNavigate(`#/p/${await createNote(note.id)}`)}>+ Add a sub-page</button>
+            <button
+              className="text-faint text-sm px-1.5 py-1 -ml-1.5 rounded hover:bg-hover hover:text-muted"
+              onClick={async () => onNavigate(`#/p/${await createNote(note.id)}`)}
+            >
+              + Add a sub-page
+            </button>
           )}
         </div>
       </div>

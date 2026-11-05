@@ -22,7 +22,9 @@ export function SlashItem({ command, selected, onHover, onSelect }: SlashItemPro
         if (selected) el?.scrollIntoView({ block: 'nearest' });
       }}
     >
-      <span className="size-10 border border-line rounded-md grid place-items-center bg-bg text-[15px] font-semibold shrink-0">{command.icon}</span>
+      <span className="size-10 border border-line rounded-md grid place-items-center bg-bg text-[15px] font-semibold shrink-0">
+        {command.icon}
+      </span>
       <span>
         <span className="block text-sm">{command.title}</span>
         <span className="block text-xs text-muted">{command.description}</span>

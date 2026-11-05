@@ -25,8 +25,9 @@ export function DatabaseError({ error }: { error: unknown }) {
         <div className="text-4xl">⚠️</div>
         <h1 className="text-2xl font-bold">Can't open local storage</h1>
         <p className="text-sm text-muted">
-          Your browser couldn't open this device's copy of your notes. Resetting local data deletes it and downloads your
-          notes from the server again. Changes that hadn't synced yet will be lost.
+          Your browser couldn't open this device's copy of your notes. Resetting local data deletes
+          it and downloads your notes from the server again. Changes that hadn't synced yet will be
+          lost.
         </p>
         <pre className="text-xs text-faint whitespace-pre-wrap break-words">{message}</pre>
         {resetFailed && (
@@ -41,7 +42,10 @@ export function DatabaseError({ error }: { error: unknown }) {
         >
           {busy ? 'Resetting…' : 'Reset local data'}
         </button>
-        <button className="text-sm text-muted hover:text-fg" onClick={() => window.location.reload()}>
+        <button
+          className="text-sm text-muted hover:text-fg"
+          onClick={() => window.location.reload()}
+        >
           Reload
         </button>
       </div>

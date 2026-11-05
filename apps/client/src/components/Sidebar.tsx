@@ -22,24 +22,39 @@ interface Props {
   setExpanded: (fn: (s: Set<string>) => Set<string>) => void;
 }
 
-const navButton = 'flex items-center gap-2 px-2 py-[5px] rounded text-left font-medium hover:bg-hover [&>span:first-child]:w-5 [&>span:first-child]:text-center';
+const navButton =
+  'flex items-center gap-2 px-2 py-[5px] rounded text-left font-medium hover:bg-hover [&>span:first-child]:w-5 [&>span:first-child]:text-center';
 const treeItem = (active: boolean) =>
   `group/item relative flex items-center gap-1 h-[30px] pr-1 rounded cursor-pointer text-fg ${active ? 'bg-active font-semibold' : 'opacity-85 hover:bg-hover'}`;
 const treeToggle = 'size-5 shrink-0 rounded-[3px] grid place-items-center text-faint';
 const treeAction = 'size-[22px] rounded-[3px] text-muted hover:bg-active';
 const menuButton = 'text-left px-2.5 py-1.5 rounded hover:bg-hover';
-const sectionHeading = 'text-xs font-semibold mb-0.5 px-2 py-1 flex justify-between items-center text-faint';
-const dotColor: Record<string, string> = { syncing: 'bg-accent animate-pulse', offline: 'bg-offline', error: 'bg-danger' };
+const sectionHeading =
+  'text-xs font-semibold mb-0.5 px-2 py-1 flex justify-between items-center text-faint';
+const dotColor: Record<string, string> = {
+  syncing: 'bg-accent animate-pulse',
+  offline: 'bg-offline',
+  error: 'bg-danger',
+};
 
 function SyncIndicator({ dirtyCount }: { dirtyCount: number }) {
   const status = useSyncExternalStore(syncEngine.subscribe, () => syncEngine.status);
   const label =
-    status === 'syncing' ? 'Syncing…'
-    : status === 'offline' ? `Offline${dirtyCount ? ` · ${dirtyCount} unsynced` : ''}`
-    : status === 'error' ? `Sync error${syncEngine.error ? `: ${syncEngine.error}` : ''}`
-    : dirtyCount ? `${dirtyCount} pending` : 'All changes synced';
+    status === 'syncing'
+      ? 'Syncing…'
+      : status === 'offline'
+        ? `Offline${dirtyCount ? ` · ${dirtyCount} unsynced` : ''}`
+        : status === 'error'
+          ? `Sync error${syncEngine.error ? `: ${syncEngine.error}` : ''}`
+          : dirtyCount
+            ? `${dirtyCount} pending`
+            : 'All changes synced';
   return (
-    <button className="flex items-center gap-2 px-2.5 py-1.5 text-xs text-faint text-left rounded hover:bg-hover" onClick={() => syncEngine.sync()} title="Sync now">
+    <button
+      className="flex items-center gap-2 px-2.5 py-1.5 text-xs text-faint text-left rounded hover:bg-hover"
+      onClick={() => syncEngine.sync()}
+      title="Sync now"
+    >
       <span className={`size-2 shrink-0 rounded-full ${dotColor[status] ?? 'bg-ok'}`} /> {label}
     </button>
   );
@@ -69,7 +84,10 @@ export function Sidebar(props: Props) {
     e.stopPropagation();
     setDragOver(null);
     const id = e.dataTransfer.getData('text/note-id');
-    if (id) moveNote(id, parentId).then((ok) => ok && parentId && setExpanded((s) => new Set(s).add(parentId)));
+    if (id)
+      moveNote(id, parentId).then(
+        (ok) => ok && parentId && setExpanded((s) => new Set(s).add(parentId)),
+      );
   }
 
   function renderItem(note: LocalNote, depth: number) {
@@ -102,13 +120,32 @@ export function Sidebar(props: Props) {
               toggle(note.id);
             }}
           >
-            <span className={`inline-block transition-transform duration-120 text-base leading-none${isOpen ? ' rotate-90' : ''}`}>›</span>
+            <span
+              className={`inline-block transition-transform duration-120 text-base leading-none${isOpen ? ' rotate-90' : ''}`}
+            >
+              ›
+            </span>
           </button>
           <span className="w-5 text-center shrink-0">{note.icon || '📄'}</span>
           <span className="flex-1 truncate">{noteTitle(note)}</span>
-          <span className="hidden gap-0.5 group-hover/item:flex max-md:flex" onClick={(e) => e.stopPropagation()}>
-            <button className={treeAction} title="More" onClick={() => setMenuFor(menuFor === note.id ? null : note.id)}>⋯</button>
-            <button className={treeAction} title="Add a page inside" onClick={() => addPage(note.id)}>+</button>
+          <span
+            className="hidden gap-0.5 group-hover/item:flex max-md:flex"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className={treeAction}
+              title="More"
+              onClick={() => setMenuFor(menuFor === note.id ? null : note.id)}
+            >
+              ⋯
+            </button>
+            <button
+              className={treeAction}
+              title="Add a page inside"
+              onClick={() => addPage(note.id)}
+            >
+              +
+            </button>
           </span>
         </div>
         {menuFor === note.id && (
@@ -117,24 +154,46 @@ export function Sidebar(props: Props) {
             onClick={(e) => e.stopPropagation()}
             onMouseLeave={() => setMenuFor(null)}
           >
-            <button className={menuButton} onClick={() => { updateNote(note.id, { favorite: !note.favorite }); setMenuFor(null); }}>
+            <button
+              className={menuButton}
+              onClick={() => {
+                updateNote(note.id, { favorite: !note.favorite });
+                setMenuFor(null);
+              }}
+            >
               {note.favorite ? '☆ Remove from favorites' : '★ Add to favorites'}
             </button>
             {note.parentId && (
-              <button className={menuButton} onClick={() => { moveNote(note.id, null); setMenuFor(null); }}>⇱ Move to top level</button>
+              <button
+                className={menuButton}
+                onClick={() => {
+                  moveNote(note.id, null);
+                  setMenuFor(null);
+                }}
+              >
+                ⇱ Move to top level
+              </button>
             )}
-            <button className={`${menuButton} text-danger`} onClick={() => { trashNote(note.id); setMenuFor(null); if (note.id === currentId) onNavigate('#/'); }}>
+            <button
+              className={`${menuButton} text-danger`}
+              onClick={() => {
+                trashNote(note.id);
+                setMenuFor(null);
+                if (note.id === currentId) onNavigate('#/');
+              }}
+            >
               🗑 Move to trash
             </button>
           </div>
         )}
-        {isOpen && (
-          children.length ? (
+        {isOpen &&
+          (children.length ? (
             <ul>{children.map((c) => renderItem(c, depth + 1))}</ul>
           ) : (
-            <div className="text-[13px] text-faint py-1" style={{ paddingLeft: 36 + depth * 14 }}>No pages inside</div>
-          )
-        )}
+            <div className="text-[13px] text-faint py-1" style={{ paddingLeft: 36 + depth * 14 }}>
+              No pages inside
+            </div>
+          ))}
       </li>
     );
   }
@@ -144,16 +203,28 @@ export function Sidebar(props: Props) {
     <aside className="w-[260px] shrink-0 bg-sidebar border-r border-line flex flex-col text-sm text-muted select-none max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-60 max-md:w-[82vw] max-md:max-w-[300px] max-md:shadow-pop max-md:pt-[env(safe-area-inset-top)]">
       <div className="flex items-center justify-between pt-2.5 pr-2 pb-1.5 pl-3">
         <div className="flex items-center gap-2 min-w-0 text-fg font-medium">
-          <span className="size-[22px] rounded bg-accent text-white grid place-items-center text-xs shrink-0">{props.user?.email[0]?.toUpperCase() ?? '?'}</span>
-          <span className="truncate" title={props.user?.email}>{props.user?.email ?? 'Sheafly'}</span>
+          <span className="size-[22px] rounded bg-accent text-white grid place-items-center text-xs shrink-0">
+            {props.user?.email[0]?.toUpperCase() ?? '?'}
+          </span>
+          <span className="truncate" title={props.user?.email}>
+            {props.user?.email ?? 'Sheafly'}
+          </span>
         </div>
-        <button className="icon-btn" title="Close sidebar (Ctrl+\)" onClick={props.onClose}>«</button>
+        <button className="icon-btn" title="Close sidebar (Ctrl+\)" onClick={props.onClose}>
+          «
+        </button>
       </div>
 
       <nav className="flex flex-col p-1">
-        <button className={navButton} onClick={props.onSearch}><span>🔍</span> Search <kbd className="ml-auto max-md:hidden">Ctrl K</kbd></button>
-        <button className={navButton} onClick={() => onNavigate('#/')}><span>🏠</span> Home</button>
-        <button className={navButton} onClick={() => addPage(null)}><span>➕</span> New page</button>
+        <button className={navButton} onClick={props.onSearch}>
+          <span>🔍</span> Search <kbd className="ml-auto max-md:hidden">Ctrl K</kbd>
+        </button>
+        <button className={navButton} onClick={() => onNavigate('#/')}>
+          <span>🏠</span> Home
+        </button>
+        <button className={navButton} onClick={() => addPage(null)}>
+          <span>➕</span> New page
+        </button>
       </nav>
 
       <div className="flex-1 overflow-y-auto py-2 px-1">
@@ -163,7 +234,11 @@ export function Sidebar(props: Props) {
             <ul>
               {favorites.map((n) => (
                 <li key={n.id}>
-                  <div className={treeItem(n.id === currentId)} style={{ paddingLeft: 8 }} onClick={() => onNavigate(`#/p/${n.id}`)}>
+                  <div
+                    className={treeItem(n.id === currentId)}
+                    style={{ paddingLeft: 8 }}
+                    onClick={() => onNavigate(`#/p/${n.id}`)}
+                  >
                     <span className={treeToggle} />
                     <span className="w-5 text-center shrink-0">{n.icon || '📄'}</span>
                     <span className="flex-1 truncate">{noteTitle(n)}</span>
@@ -183,22 +258,54 @@ export function Sidebar(props: Props) {
         >
           <h3 className={sectionHeading}>
             Pages
-            <button className="size-5 rounded inline-flex items-center justify-center text-muted text-sm hover:bg-hover hover:text-fg" title="New page" onClick={() => addPage(null)}>+</button>
+            <button
+              className="size-5 rounded inline-flex items-center justify-center text-muted text-sm hover:bg-hover hover:text-fg"
+              title="New page"
+              onClick={() => addPage(null)}
+            >
+              +
+            </button>
           </h3>
           {roots.length ? (
             <ul>{roots.map((n) => renderItem(n, 0))}</ul>
           ) : (
-            <div className="text-[13px] text-faint py-1" style={{ paddingLeft: 12 }}>No pages yet</div>
+            <div className="text-[13px] text-faint py-1" style={{ paddingLeft: 12 }}>
+              No pages yet
+            </div>
           )}
         </section>
       </div>
 
       <div className="flex flex-col p-1 border-t border-line">
-        <a className={`${navButton} text-accent`} href="https://github.com/AlexSwensen/sheafly#contributing" target="_blank" rel="noopener noreferrer"><span>💡</span> Contribute</a>
-        <a className={navButton} href="https://github.com/AlexSwensen/sheafly/issues" target="_blank" rel="noopener noreferrer"><span>🐞</span> Report a bug</a>
-        <button className={`${navButton}${props.route === 'trash' ? ' bg-hover' : ''}`} onClick={() => onNavigate('#/trash')}><span>🗑</span> Trash</button>
-        <button className={navButton} onClick={props.onToggleTheme}><span>{props.theme === 'dark' ? '☀️' : '🌙'}</span> {props.theme === 'dark' ? 'Light' : 'Dark'} mode</button>
-        <button className={navButton} onClick={props.onLogout}><span>↪</span> Log out</button>
+        <a
+          className={`${navButton} text-accent`}
+          href="https://github.com/AlexSwensen/sheafly#contributing"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>💡</span> Contribute
+        </a>
+        <a
+          className={navButton}
+          href="https://github.com/AlexSwensen/sheafly/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span>🐞</span> Report a bug
+        </a>
+        <button
+          className={`${navButton}${props.route === 'trash' ? ' bg-hover' : ''}`}
+          onClick={() => onNavigate('#/trash')}
+        >
+          <span>🗑</span> Trash
+        </button>
+        <button className={navButton} onClick={props.onToggleTheme}>
+          <span>{props.theme === 'dark' ? '☀️' : '🌙'}</span>{' '}
+          {props.theme === 'dark' ? 'Light' : 'Dark'} mode
+        </button>
+        <button className={navButton} onClick={props.onLogout}>
+          <span>↪</span> Log out
+        </button>
         <SyncIndicator dirtyCount={props.dirtyCount} />
         <span className="px-2.5 pb-1 text-[11px] text-faint">v{__APP_VERSION__}</span>
       </div>

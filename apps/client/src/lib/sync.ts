@@ -81,7 +81,11 @@ class SyncEngine {
   private async syncOnce(): Promise<boolean> {
     const since = (await getMeta<number>('seq')) ?? 0;
     const dirty = await db.notes.where('dirty').equals(1).limit(BATCH).toArray();
-    const req: SyncRequest<Note['content']> = { since, clientId: this.clientId, changes: dirty.map(stripLocal) };
+    const req: SyncRequest<Note['content']> = {
+      since,
+      clientId: this.clientId,
+      changes: dirty.map(stripLocal),
+    };
     const res = await api<SyncResponse<Note['content']>>('/api/sync', req);
     await db.transaction('rw', db.notes, db.meta, async () => {
       for (const sent of dirty) {
@@ -104,7 +108,9 @@ class SyncEngine {
     this.sync();
     const token = session.token;
     if (token) {
-      this.events = new EventSource(`/api/events?token=${encodeURIComponent(token)}&clientId=${this.clientId}`);
+      this.events = new EventSource(
+        `/api/events?token=${encodeURIComponent(token)}&clientId=${this.clientId}`,
+      );
       this.events.addEventListener('change', () => this.schedule(100));
       this.events.addEventListener('open', () => this.schedule(100));
     }

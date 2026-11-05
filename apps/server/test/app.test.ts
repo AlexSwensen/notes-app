@@ -8,12 +8,27 @@ function makeApp(allowSignup = true) {
 }
 
 const note = (id: string, updatedAt: number, extra: Record<string, unknown> = {}) => ({
-  id, parentId: null, title: `Title ${id}`, icon: '', content: { type: 'doc' }, text: 'hello world',
-  favorite: false, sort: 0, trashed: false, purged: false, createdAt: 1, updatedAt, ...extra,
+  id,
+  parentId: null,
+  title: `Title ${id}`,
+  icon: '',
+  content: { type: 'doc' },
+  text: 'hello world',
+  favorite: false,
+  sort: 0,
+  trashed: false,
+  purged: false,
+  createdAt: 1,
+  updatedAt,
+  ...extra,
 });
 
 async function signup(app: ReturnType<typeof makeApp>, email = 'a@example.com') {
-  const res = await app.inject({ method: 'POST', url: '/api/auth/signup', payload: { email, password: 'password123' } });
+  const res = await app.inject({
+    method: 'POST',
+    url: '/api/auth/signup',
+    payload: { email, password: 'password123' },
+  });
   assert.equal(res.statusCode, 200, res.body);
   return res.json().token as string;
 }
@@ -21,22 +36,46 @@ async function signup(app: ReturnType<typeof makeApp>, email = 'a@example.com') 
 test('signup, login and auth', async () => {
   const app = makeApp();
   await signup(app);
-  const dup = await app.inject({ method: 'POST', url: '/api/auth/signup', payload: { email: 'A@example.com', password: 'password123' } });
+  const dup = await app.inject({
+    method: 'POST',
+    url: '/api/auth/signup',
+    payload: { email: 'A@example.com', password: 'password123' },
+  });
   assert.equal(dup.statusCode, 409);
-  const bad = await app.inject({ method: 'POST', url: '/api/auth/login', payload: { email: 'a@example.com', password: 'nope' } });
+  const bad = await app.inject({
+    method: 'POST',
+    url: '/api/auth/login',
+    payload: { email: 'a@example.com', password: 'nope' },
+  });
   assert.equal(bad.statusCode, 401);
-  const ok = await app.inject({ method: 'POST', url: '/api/auth/login', payload: { email: 'a@example.com', password: 'password123' } });
+  const ok = await app.inject({
+    method: 'POST',
+    url: '/api/auth/login',
+    payload: { email: 'a@example.com', password: 'password123' },
+  });
   assert.equal(ok.statusCode, 200);
-  const me = await app.inject({ method: 'GET', url: '/api/me', headers: { authorization: `Bearer ${ok.json().token}` } });
+  const me = await app.inject({
+    method: 'GET',
+    url: '/api/me',
+    headers: { authorization: `Bearer ${ok.json().token}` },
+  });
   assert.equal(me.json().email, 'a@example.com');
-  const unauth = await app.inject({ method: 'GET', url: '/api/me', headers: { authorization: 'Bearer forged.token' } });
+  const unauth = await app.inject({
+    method: 'GET',
+    url: '/api/me',
+    headers: { authorization: 'Bearer forged.token' },
+  });
   assert.equal(unauth.statusCode, 401);
 });
 
 test('signup disabled after first user when ALLOW_SIGNUP=false', async () => {
   const app = makeApp(false);
   await signup(app);
-  const res = await app.inject({ method: 'POST', url: '/api/auth/signup', payload: { email: 'b@example.com', password: 'password123' } });
+  const res = await app.inject({
+    method: 'POST',
+    url: '/api/auth/signup',
+    payload: { email: 'b@example.com', password: 'password123' },
+  });
   assert.equal(res.statusCode, 403);
 });
 
@@ -45,7 +84,12 @@ test('sync push/pull with last-writer-wins and user isolation', async () => {
   const a = await signup(app, 'a@example.com');
   const b = await signup(app, 'b@example.com');
   const sync = (token: string, payload: object) =>
-    app.inject({ method: 'POST', url: '/api/sync', headers: { authorization: `Bearer ${token}` }, payload });
+    app.inject({
+      method: 'POST',
+      url: '/api/sync',
+      headers: { authorization: `Bearer ${token}` },
+      payload,
+    });
 
   let r = await sync(a, { since: 0, changes: [note('n1', 100), note('n2', 100)] });
   assert.equal(r.statusCode, 200);
@@ -54,7 +98,13 @@ test('sync push/pull with last-writer-wins and user isolation', async () => {
 
   // Another device pulls everything
   r = await sync(a, { since: 0, changes: [] });
-  assert.deepEqual(r.json().changes.map((n: { id: string }) => n.id).sort(), ['n1', 'n2']);
+  assert.deepEqual(
+    r
+      .json()
+      .changes.map((n: { id: string }) => n.id)
+      .sort(),
+    ['n1', 'n2'],
+  );
 
   // Stale write is ignored, newer write wins
   await sync(a, { since: seq1, changes: [note('n1', 50, { title: 'stale' })] });

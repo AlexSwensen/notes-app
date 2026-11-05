@@ -39,7 +39,10 @@ describe('api', () => {
     await api('/api/sync', { since: 0 });
     const init = fetchMock.mock.calls[0][1];
     expect(init.method).toBe('POST');
-    expect(init.headers).toEqual({ 'Content-Type': 'application/json', Authorization: 'Bearer tok' });
+    expect(init.headers).toEqual({
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer tok',
+    });
     expect(JSON.parse(init.body)).toEqual({ since: 0 });
   });
 
@@ -52,9 +55,15 @@ describe('api', () => {
   });
 
   it('uses a generic message when the error body is not JSON', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('<html>Bad gateway</html>', { status: 502 })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response('<html>Bad gateway</html>', { status: 502 })),
+    );
 
-    await expect(api('/api/me')).rejects.toMatchObject({ status: 502, message: 'Request failed (502)' });
+    await expect(api('/api/me')).rejects.toMatchObject({
+      status: 502,
+      message: 'Request failed (502)',
+    });
   });
 
   it('lets network errors propagate', async () => {

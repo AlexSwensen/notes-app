@@ -6,13 +6,23 @@ import { db, type LocalNote } from '../lib/db';
 import { syncEngine } from '../lib/sync';
 import { makeNote } from '../test/factories';
 
-const doc = (text: string) => ({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] });
+const doc = (text: string) => ({
+  type: 'doc',
+  content: [{ type: 'paragraph', content: [{ type: 'text', text }] }],
+});
 
 async function renderPage(note: LocalNote, others: LocalNote[] = [], subpages: LocalNote[] = []) {
   await db.notes.bulkAdd([note, ...others, ...subpages]);
   const all = [note, ...others, ...subpages];
   const onNavigate = vi.fn();
-  const view = render(<PageView note={note} byId={new Map(all.map((n) => [n.id, n]))} subpages={subpages} onNavigate={onNavigate} />);
+  const view = render(
+    <PageView
+      note={note}
+      byId={new Map(all.map((n) => [n.id, n]))}
+      subpages={subpages}
+      onNavigate={onNavigate}
+    />,
+  );
   return { ...view, onNavigate };
 }
 
@@ -27,7 +37,10 @@ describe('PageView', () => {
   it('renders breadcrumbs for every ancestor', async () => {
     const grand = makeNote({ id: 'g', title: 'Work', icon: '💼' });
     const parent = makeNote({ id: 'p', title: 'Projects', parentId: 'g' });
-    const { onNavigate } = await renderPage(makeNote({ title: 'Roadmap', parentId: 'p' }), [grand, parent]);
+    const { onNavigate } = await renderPage(makeNote({ title: 'Roadmap', parentId: 'p' }), [
+      grand,
+      parent,
+    ]);
 
     await userEvent.click(screen.getByRole('button', { name: '💼 Work' }));
     expect(onNavigate).toHaveBeenCalledWith('#/p/g');
@@ -52,7 +65,11 @@ describe('PageView', () => {
     await renderPage(makeNote({ title: 'Has title' }));
     title().focus();
     await userEvent.keyboard('{Enter}');
-    await waitFor(() => expect(editor().contains(document.activeElement) || document.activeElement === editor()).toBe(true));
+    await waitFor(() =>
+      expect(editor().contains(document.activeElement) || document.activeElement === editor()).toBe(
+        true,
+      ),
+    );
   });
 
   it('renders the stored document in the editor', async () => {
@@ -65,7 +82,14 @@ describe('PageView', () => {
     const { rerender } = await renderPage(note);
 
     const updated = { ...note, content: doc('After sync'), updatedAt: note.updatedAt + 1 };
-    rerender(<PageView note={updated} byId={new Map([[note.id, updated]])} subpages={[]} onNavigate={() => {}} />);
+    rerender(
+      <PageView
+        note={updated}
+        byId={new Map([[note.id, updated]])}
+        subpages={[]}
+        onNavigate={() => {}}
+      />,
+    );
     await waitFor(() => expect(editor().textContent).toBe('After sync'));
   });
 
@@ -76,7 +100,9 @@ describe('PageView', () => {
       editor().focus();
     });
     await userEvent.type(editor(), ' typed');
-    await waitFor(async () => expect((await db.notes.get('n'))!.text).toContain('typed'), { timeout: 2000 });
+    await waitFor(async () => expect((await db.notes.get('n'))!.text).toContain('typed'), {
+      timeout: 2000,
+    });
     expect((await db.notes.get('n'))!.dirty).toBe(1);
   });
 

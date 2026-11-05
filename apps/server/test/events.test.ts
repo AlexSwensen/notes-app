@@ -7,7 +7,10 @@ import { makeApp, note, signup, sync } from './helpers.ts';
 function fakeStream(clientId: string) {
   const writes: string[] = [];
   let ended = false;
-  const res = { write: (s: string) => writes.push(s), end: () => (ended = true) } as unknown as ServerResponse;
+  const res = {
+    write: (s: string) => writes.push(s),
+    end: () => (ended = true),
+  } as unknown as ServerResponse;
   return { stream: { res, clientId }, writes, ended: () => ended };
 }
 
@@ -56,7 +59,10 @@ describe('SSE hub', () => {
 /** Opens an SSE connection and collects decoded chunks until `until` matches. */
 async function openStream(base: string, token: string, clientId: string) {
   const controller = new AbortController();
-  const res = await fetch(`${base}/api/events?token=${encodeURIComponent(token)}&clientId=${clientId}`, { signal: controller.signal });
+  const res = await fetch(
+    `${base}/api/events?token=${encodeURIComponent(token)}&clientId=${clientId}`,
+    { signal: controller.signal },
+  );
   const reader = res.body!.getReader();
   const decoder = new TextDecoder();
   let received = '';
@@ -65,10 +71,13 @@ async function openStream(base: string, token: string, clientId: string) {
     async waitFor(pattern: RegExp, timeoutMs = 2000) {
       const deadline = Date.now() + timeoutMs;
       while (!pattern.test(received)) {
-        if (Date.now() > deadline) throw new Error(`Timed out waiting for ${pattern}; got ${JSON.stringify(received)}`);
+        if (Date.now() > deadline)
+          throw new Error(`Timed out waiting for ${pattern}; got ${JSON.stringify(received)}`);
         const { value, done } = await Promise.race([
           reader.read(),
-          new Promise<{ value: undefined; done: true }>((r) => setTimeout(() => r({ value: undefined, done: true }), deadline - Date.now())),
+          new Promise<{ value: undefined; done: true }>((r) =>
+            setTimeout(() => r({ value: undefined, done: true }), deadline - Date.now()),
+          ),
         ]);
         if (done && !value) continue;
         received += decoder.decode(value);
@@ -98,7 +107,10 @@ describe('GET /api/events', () => {
 
     const mine = await openStream(base, token, 'tab-1');
     const theirs = await openStream(base, otherToken, 'tab-9');
-    t.after(() => { mine.close(); theirs.close(); });
+    t.after(() => {
+      mine.close();
+      theirs.close();
+    });
 
     assert.equal(mine.res.status, 200);
     assert.equal(mine.res.headers.get('content-type'), 'text/event-stream');

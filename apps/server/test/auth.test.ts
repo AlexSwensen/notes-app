@@ -43,7 +43,9 @@ describe('tokens', () => {
 
   it('rejects tampered payloads', () => {
     const [, sig] = tokens.issue('user-1').split('.');
-    const forged = Buffer.from(JSON.stringify({ sub: 'admin', exp: Date.now() + 1e9 })).toString('base64url');
+    const forged = Buffer.from(JSON.stringify({ sub: 'admin', exp: Date.now() + 1e9 })).toString(
+      'base64url',
+    );
     assert.equal(tokens.verify(`${forged}.${sig}`), null);
   });
 

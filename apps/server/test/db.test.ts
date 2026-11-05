@@ -31,14 +31,19 @@ describe('openDb', () => {
 
   it('records the applied migrations', () => {
     const db = openDb(':memory:');
-    const rows = db.raw.prepare('SELECT name FROM __drizzle_migrations').all() as { name: string }[];
+    const rows = db.raw.prepare('SELECT name FROM __drizzle_migrations').all() as {
+      name: string;
+    }[];
     assert.ok(rows.length >= 1);
     assert.match(rows[0].name, /_init$/);
   });
 
   it('enforces foreign keys', () => {
     const db = openDb(':memory:');
-    assert.throws(() => db.applyChanges('no-such-user', [note('n1', 1)]), sqliteError(/FOREIGN KEY/));
+    assert.throws(
+      () => db.applyChanges('no-such-user', [note('n1', 1)]),
+      sqliteError(/FOREIGN KEY/),
+    );
   });
 });
 
@@ -56,7 +61,10 @@ describe('users', () => {
     const db = openDb(':memory:');
     db.createUser('u1', 'Ada@Example.com', 'hash');
     assert.equal(db.userByEmail('ada@example.COM')?.id, 'u1');
-    assert.throws(() => db.createUser('u2', 'ADA@example.com', 'hash'), sqliteError(/UNIQUE constraint failed: users.email/));
+    assert.throws(
+      () => db.createUser('u2', 'ADA@example.com', 'hash'),
+      sqliteError(/UNIQUE constraint failed: users.email/),
+    );
   });
 
   it('stores the password hash and creation time', () => {
@@ -74,14 +82,27 @@ describe('applyChanges / changesSince', () => {
     const db = dbWithUsers('u1');
     assert.equal(db.applyChanges('u1', [note('a', 1), note('b', 1)]), 2);
     assert.equal(db.currentSeq(), 2);
-    assert.deepEqual(db.changesSince('u1', 0, 10).map((n) => [n.id, n.seq]), [['a', 1], ['b', 2]]);
+    assert.deepEqual(
+      db.changesSince('u1', 0, 10).map((n) => [n.id, n.seq]),
+      [
+        ['a', 1],
+        ['b', 2],
+      ],
+    );
   });
 
   it('round-trips every note field', () => {
     const db = dbWithUsers('u1');
     const input = note('a', 5, {
-      parentId: 'p', title: 'T', icon: '🔥', content: { type: 'doc', content: [{ type: 'paragraph' }] },
-      text: 'body', favorite: true, sort: 1.5, trashed: true, createdAt: 3,
+      parentId: 'p',
+      title: 'T',
+      icon: '🔥',
+      content: { type: 'doc', content: [{ type: 'paragraph' }] },
+      text: 'body',
+      favorite: true,
+      sort: 1.5,
+      trashed: true,
+      createdAt: 3,
     });
     db.applyChanges('u1', [input]);
     assert.deepEqual(db.changesSince('u1', 0, 10)[0], { ...input, seq: 1 });
@@ -122,7 +143,9 @@ describe('applyChanges / changesSince', () => {
 
   it('wipes content when a note is purged', () => {
     const db = dbWithUsers('u1');
-    db.applyChanges('u1', [note('a', 2, { purged: true, trashed: true, title: 'secret', icon: '🔒', text: 'secret' })]);
+    db.applyChanges('u1', [
+      note('a', 2, { purged: true, trashed: true, title: 'secret', icon: '🔒', text: 'secret' }),
+    ]);
     const [n] = db.changesSince('u1', 0, 10);
     assert.deepEqual([n.title, n.icon, n.text, n.content, n.purged], ['', '', '', null, true]);
   });
@@ -141,33 +164,58 @@ describe('applyChanges / changesSince', () => {
     db.applyChanges('u2', [note('x', 1)]);
     db.applyChanges('u1', [note('c', 1)]);
 
-    assert.deepEqual(db.changesSince('u1', 0, 10).map((n) => n.id), ['a', 'b', 'c']);
-    assert.deepEqual(db.changesSince('u1', 2, 10).map((n) => n.id), ['c']);
-    assert.deepEqual(db.changesSince('u1', 0, 2).map((n) => n.id), ['a', 'b']);
-    assert.deepEqual(db.changesSince('u2', 0, 10).map((n) => n.id), ['x']);
+    assert.deepEqual(
+      db.changesSince('u1', 0, 10).map((n) => n.id),
+      ['a', 'b', 'c'],
+    );
+    assert.deepEqual(
+      db.changesSince('u1', 2, 10).map((n) => n.id),
+      ['c'],
+    );
+    assert.deepEqual(
+      db.changesSince('u1', 0, 2).map((n) => n.id),
+      ['a', 'b'],
+    );
+    assert.deepEqual(
+      db.changesSince('u2', 0, 10).map((n) => n.id),
+      ['x'],
+    );
   });
 });
 
 describe('relational queries', () => {
   it('loads a note with its user, parent and children', () => {
     const db = dbWithUsers('u1');
-    db.applyChanges('u1', [note('root', 1, { title: 'Root' }), note('kid', 1, { title: 'Kid', parentId: 'root' })]);
+    db.applyChanges('u1', [
+      note('root', 1, { title: 'Root' }),
+      note('kid', 1, { title: 'Kid', parentId: 'root' }),
+    ]);
 
-    const root = db.drizzle.query.notes.findFirst({
-      where: { id: 'root' },
-      columns: { title: true },
-      with: { user: { columns: { email: true } }, children: { columns: { title: true } } },
-    }).sync();
-    assert.deepEqual(root, { title: 'Root', user: { email: 'u1@example.com' }, children: [{ title: 'Kid' }] });
+    const root = db.drizzle.query.notes
+      .findFirst({
+        where: { id: 'root' },
+        columns: { title: true },
+        with: { user: { columns: { email: true } }, children: { columns: { title: true } } },
+      })
+      .sync();
+    assert.deepEqual(root, {
+      title: 'Root',
+      user: { email: 'u1@example.com' },
+      children: [{ title: 'Kid' }],
+    });
 
-    const kid = db.drizzle.query.notes.findFirst({ where: { id: 'kid' }, with: { parent: { columns: { id: true } } } }).sync();
+    const kid = db.drizzle.query.notes
+      .findFirst({ where: { id: 'kid' }, with: { parent: { columns: { id: true } } } })
+      .sync();
     assert.equal(kid?.parent?.id, 'root');
   });
 
   it("loads a user's notes", () => {
     const db = dbWithUsers('u1');
     db.applyChanges('u1', [note('a', 1), note('b', 1)]);
-    const user = db.drizzle.query.users.findFirst({ where: { id: 'u1' }, with: { notes: { columns: { id: true } } } }).sync();
+    const user = db.drizzle.query.users
+      .findFirst({ where: { id: 'u1' }, with: { notes: { columns: { id: true } } } })
+      .sync();
     assert.deepEqual(user?.notes.map((n) => n.id).sort(), ['a', 'b']);
   });
 });

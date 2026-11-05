@@ -24,8 +24,11 @@ export function useNoteTree(notes: LocalNote[]) {
       if (!tree.has(key)) tree.set(key, []);
       tree.get(key)!.push(n);
     }
-    for (const list of tree.values()) list.sort((a, b) => a.sort - b.sort || a.createdAt - b.createdAt);
-    const favorites = notes.filter((n) => n.favorite && !n.trashed && !n.purged).sort((a, b) => a.title.localeCompare(b.title));
+    for (const list of tree.values())
+      list.sort((a, b) => a.sort - b.sort || a.createdAt - b.createdAt);
+    const favorites = notes
+      .filter((n) => n.favorite && !n.trashed && !n.purged)
+      .sort((a, b) => a.title.localeCompare(b.title));
     return { byId, tree, favorites, dirtyCount };
   }, [notes]);
 }

@@ -12,13 +12,17 @@ function isValidNote(n: unknown): n is Note {
   if (!n || typeof n !== 'object') return false;
   const o = n as Record<string, unknown>;
   return (
-    typeof o.id === 'string' && ID_RE.test(o.id) &&
+    typeof o.id === 'string' &&
+    ID_RE.test(o.id) &&
     (o.parentId === null || (typeof o.parentId === 'string' && ID_RE.test(o.parentId))) &&
-    typeof o.title === 'string' && o.title.length <= 1000 &&
-    typeof o.icon === 'string' && o.icon.length <= 32 &&
+    typeof o.title === 'string' &&
+    o.title.length <= 1000 &&
+    typeof o.icon === 'string' &&
+    o.icon.length <= 32 &&
     typeof o.text === 'string' &&
     typeof o.favorite === 'boolean' &&
-    typeof o.sort === 'number' && Number.isFinite(o.sort) &&
+    typeof o.sort === 'number' &&
+    Number.isFinite(o.sort) &&
     typeof o.trashed === 'boolean' &&
     typeof o.purged === 'boolean' &&
     Number.isSafeInteger(o.createdAt) &&
@@ -40,8 +44,10 @@ export function registerSyncRoutes(app: FastifyInstance, ctx: AppContext) {
     const body = (req.body ?? {}) as { since?: unknown; changes?: unknown; clientId?: unknown };
     const since = Number.isSafeInteger(body.since) ? (body.since as number) : 0;
     const changes = Array.isArray(body.changes) ? body.changes : [];
-    if (changes.length > MAX_CHANGES) return reply.code(413).send({ error: `At most ${MAX_CHANGES} changes per request` });
-    if (!changes.every(isValidNote)) return reply.code(400).send({ error: 'Invalid note in changes' });
+    if (changes.length > MAX_CHANGES)
+      return reply.code(413).send({ error: `At most ${MAX_CHANGES} changes per request` });
+    if (!changes.every(isValidNote))
+      return reply.code(400).send({ error: 'Invalid note in changes' });
 
     const applied = changes.length ? db.applyChanges(userId, changes) : 0;
     // Fetch one extra row to find out whether there is another page.

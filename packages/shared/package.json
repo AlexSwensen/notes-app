@@ -3,6 +3,10 @@
   "version": "1.2.5",
   "private": true,
   "type": "module",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
   "exports": {
     ".": "./src/index.ts"
   }

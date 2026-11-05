@@ -11,7 +11,14 @@ function renderPalette(notes: LocalNote[]) {
   searchIndex.update(notes);
   const onNavigate = vi.fn();
   const onClose = vi.fn();
-  render(<SearchPalette notes={notes} byId={new Map(notes.map((n) => [n.id, n]))} onNavigate={onNavigate} onClose={onClose} />);
+  render(
+    <SearchPalette
+      notes={notes}
+      byId={new Map(notes.map((n) => [n.id, n]))}
+      onNavigate={onNavigate}
+      onClose={onClose}
+    />,
+  );
   return { onNavigate, onClose, input: screen.getByPlaceholderText('Search your notes…') };
 }
 
@@ -64,7 +71,10 @@ describe('SearchPalette', () => {
   });
 
   it('moves the selection with the arrow keys and wraps around', async () => {
-    const { input } = renderPalette([makeNote({ title: 'A', updatedAt: 2 }), makeNote({ title: 'B', updatedAt: 1 })]);
+    const { input } = renderPalette([
+      makeNote({ title: 'A', updatedAt: 2 }),
+      makeNote({ title: 'B', updatedAt: 1 }),
+    ]);
     expect(selected()!.textContent).toContain('A');
 
     await userEvent.type(input, '{ArrowDown}');

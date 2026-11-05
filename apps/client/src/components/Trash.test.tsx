@@ -9,7 +9,9 @@ import { makeNote } from '../test/factories';
 async function renderTrash(notes: LocalNote[]) {
   await db.notes.bulkAdd(notes);
   const onNavigate = vi.fn();
-  render(<Trash notes={notes} byId={new Map(notes.map((n) => [n.id, n]))} onNavigate={onNavigate} />);
+  render(
+    <Trash notes={notes} byId={new Map(notes.map((n) => [n.id, n]))} onNavigate={onNavigate} />,
+  );
   return { onNavigate };
 }
 
@@ -40,13 +42,18 @@ describe('Trash', () => {
   });
 
   it('shows a trashed child when its parent is live', async () => {
-    await renderTrash([makeNote({ id: 'p', title: 'Parent' }), makeNote({ title: 'Child', parentId: 'p', trashed: true })]);
+    await renderTrash([
+      makeNote({ id: 'p', title: 'Parent' }),
+      makeNote({ title: 'Child', parentId: 'p', trashed: true }),
+    ]);
     expect(screen.getByText('1 page')).toBeTruthy();
     expect(screen.getByText('Child', { exact: false })).toBeTruthy();
   });
 
   it('opens and restores a page', async () => {
-    const { onNavigate } = await renderTrash([makeNote({ id: 'n', title: 'Restore me', trashed: true })]);
+    const { onNavigate } = await renderTrash([
+      makeNote({ id: 'n', title: 'Restore me', trashed: true }),
+    ]);
     const user = userEvent.setup();
 
     await user.click(screen.getByText('Restore me', { exact: false }));
@@ -76,7 +83,10 @@ describe('Trash', () => {
       makeNote({ id: 'b', trashed: true }),
       makeNote({ id: 'live' }),
     ]);
-    vi.stubGlobal('confirm', vi.fn(() => true));
+    vi.stubGlobal(
+      'confirm',
+      vi.fn(() => true),
+    );
 
     await userEvent.click(screen.getByRole('button', { name: 'Empty trash' }));
     await waitFor(async () => {

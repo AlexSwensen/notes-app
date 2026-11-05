@@ -6,7 +6,10 @@ import { session } from '../lib/api';
 import { jsonResponse } from '../test/factories';
 
 /** Answers `/api/config` with `allowSignup` and every other call with `respond`. */
-function mockApi(respond: (path: string, body: unknown) => Response | Promise<Response>, allowSignup = true) {
+function mockApi(
+  respond: (path: string, body: unknown) => Response | Promise<Response>,
+  allowSignup = true,
+) {
   const fetchMock = vi.fn(async (path: string, init?: RequestInit) => {
     if (path === '/api/config') return jsonResponse({ allowSignup });
     return respond(path, init?.body ? JSON.parse(init.body as string) : undefined);
@@ -24,7 +27,9 @@ async function fillIn(email: string, password: string) {
 
 describe('Auth', () => {
   it('logs in, stores the session and reports success', async () => {
-    const fetchMock = mockApi(() => jsonResponse({ token: 'tok', user: { id: 'u1', email: 'a@example.com' } }));
+    const fetchMock = mockApi(() =>
+      jsonResponse({ token: 'tok', user: { id: 'u1', email: 'a@example.com' } }),
+    );
     const onAuthed = vi.fn();
     render(<Auth onAuthed={onAuthed} />);
 
@@ -32,13 +37,18 @@ describe('Auth', () => {
     await user.click(screen.getByRole('button', { name: 'Log in' }));
 
     await waitFor(() => expect(onAuthed).toHaveBeenCalledOnce());
-    expect(fetchMock).toHaveBeenCalledWith('/api/auth/login', expect.objectContaining({ method: 'POST' }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/auth/login',
+      expect.objectContaining({ method: 'POST' }),
+    );
     expect(session.token).toBe('tok');
     expect(session.user).toEqual({ id: 'u1', email: 'a@example.com' });
   });
 
   it('switches to sign-up and posts to the signup endpoint', async () => {
-    const fetchMock = mockApi(() => jsonResponse({ token: 'tok', user: { id: 'u1', email: 'new@example.com' } }));
+    const fetchMock = mockApi(() =>
+      jsonResponse({ token: 'tok', user: { id: 'u1', email: 'new@example.com' } }),
+    );
     const onAuthed = vi.fn();
     render(<Auth onAuthed={onAuthed} />);
 
@@ -53,7 +63,10 @@ describe('Auth', () => {
     await waitFor(() => expect(onAuthed).toHaveBeenCalled());
     const [path, init] = fetchMock.mock.calls.at(-1)!;
     expect(path).toBe('/api/auth/signup');
-    expect(JSON.parse(init!.body as string)).toEqual({ email: 'new@example.com', password: 'password123' });
+    expect(JSON.parse(init!.body as string)).toEqual({
+      email: 'new@example.com',
+      password: 'password123',
+    });
   });
 
   it('shows the server error and stays on the form', async () => {

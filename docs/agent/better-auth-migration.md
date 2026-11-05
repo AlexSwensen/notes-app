@@ -15,26 +15,26 @@ Replace Sheafly's home-grown auth with [better-auth](https://better-auth.com):
 
 ## Current auth (what we're migrating FROM)
 
-| Concern | Implementation |
-| --- | --- |
-| User table | `apps/server/src/db/schema/users.ts`: `id` (UUID text PK), `email` (`NOcase` unique), `password_hash`, `created_at` (ms integer). |
-| Password hash | `apps/server/src/auth/password.ts`: **scrypt**, self-describing string `scrypt$<salt>$<key>` (salt+key base64url). `verifyPassword(pw, stored) -> boolean`. |
-| Sessions | `apps/server/src/auth/tokens.ts`: stateless HMAC-SHA256 `<payload>.<sig>`, payload = base64url `{sub, exp}`, 90-day TTL. Stored client-side in `localStorage['notes.token']`, sent as `Authorization: Bearer`. |
-| Rate limit | `apps/server/src/auth/rate-limit.ts`: in-memory 20 attempts / IP / 15 min. |
-| Auth routes | `apps/server/src/routes/auth.ts`: `GET /api/config`, `POST /api/auth/signup`, `POST /api/auth/login`, `GET /api/me`. |
-| Auth in context | `AppContext.requireUser` / `userFromToken` (`app.ts`) also gate `routes/sync.ts` and `routes/events.ts` (SSE, token via query string). |
-| Client | `components/Auth.tsx` + `lib/api.ts`: POST `{email,password}`, store returned token in `localStorage['notes.token']` / `['notes.user']`. |
-| FK | `notes.user_id -> users.id ON DELETE CASCADE` (see `drizzle/20261102192822_init/migration.sql`). |
+| Concern         | Implementation                                                                                                                                                                                                 |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| User table      | `apps/server/src/db/schema/users.ts`: `id` (UUID text PK), `email` (`NOcase` unique), `password_hash`, `created_at` (ms integer).                                                                              |
+| Password hash   | `apps/server/src/auth/password.ts`: **scrypt**, self-describing string `scrypt$<salt>$<key>` (salt+key base64url). `verifyPassword(pw, stored) -> boolean`.                                                    |
+| Sessions        | `apps/server/src/auth/tokens.ts`: stateless HMAC-SHA256 `<payload>.<sig>`, payload = base64url `{sub, exp}`, 90-day TTL. Stored client-side in `localStorage['notes.token']`, sent as `Authorization: Bearer`. |
+| Rate limit      | `apps/server/src/auth/rate-limit.ts`: in-memory 20 attempts / IP / 15 min.                                                                                                                                     |
+| Auth routes     | `apps/server/src/routes/auth.ts`: `GET /api/config`, `POST /api/auth/signup`, `POST /api/auth/login`, `GET /api/me`.                                                                                           |
+| Auth in context | `AppContext.requireUser` / `userFromToken` (`app.ts`) also gate `routes/sync.ts` and `routes/events.ts` (SSE, token via query string).                                                                         |
+| Client          | `components/Auth.tsx` + `lib/api.ts`: POST `{email,password}`, store returned token in `localStorage['notes.token']` / `['notes.user']`.                                                                       |
+| FK              | `notes.user_id -> users.id ON DELETE CASCADE` (see `drizzle/20261102192822_init/migration.sql`).                                                                                                               |
 
 ## Decisions
 
-| # | Decision | Date | Notes |
-| --- | --- | --- | --- |
-| D1 | **Table strategy: create a NEW better-auth `user` table** (better-auth core schema), and **copy** existing `users` rows into it. | 2026-11-03 | Chosen over "reuse/alias the existing `users` table". See T2. |
-| D2 | **Cookies, not Bearer tokens.** Client switches to `createAuthClient()` from `better-auth/react` + `useSession()`. | 2026-11-03 | See T4 for why this is clean (same-origin). |
-| D3 | **Re-login on upgrade is acceptable.** The old Bearer token is dropped; users sign in once via cookies on upgrade. | 2026-11-03 | IndexedDB notes are untouched, so no note data is orphaned. |
-| D4 | **Use better-auth's built-in rate limiting.** Drop `auth/rate-limit.ts`. | 2026-11-03 | Replace 20/IP/15min with better-auth defaults (tune later if needed). |
-| D5 | **Decisions + design live in this doc** (`docs/agent/`), referenced from `AGENTS.md`. | 2026-11-03 | |
+| #   | Decision                                                                                                                         | Date       | Notes                                                                 |
+| --- | -------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------- |
+| D1  | **Table strategy: create a NEW better-auth `user` table** (better-auth core schema), and **copy** existing `users` rows into it. | 2026-11-03 | Chosen over "reuse/alias the existing `users` table". See T2.         |
+| D2  | **Cookies, not Bearer tokens.** Client switches to `createAuthClient()` from `better-auth/react` + `useSession()`.               | 2026-11-03 | See T4 for why this is clean (same-origin).                           |
+| D3  | **Re-login on upgrade is acceptable.** The old Bearer token is dropped; users sign in once via cookies on upgrade.               | 2026-11-03 | IndexedDB notes are untouched, so no note data is orphaned.           |
+| D4  | **Use better-auth's built-in rate limiting.** Drop `auth/rate-limit.ts`.                                                         | 2026-11-03 | Replace 20/IP/15min with better-auth defaults (tune later if needed). |
+| D5  | **Decisions + design live in this doc** (`docs/agent/`), referenced from `AGENTS.md`.                                            | 2026-11-03 |                                                                       |
 
 ## better-auth facts (grounded in their docs)
 
@@ -59,7 +59,7 @@ Replace Sheafly's home-grown auth with [better-auth](https://better-auth.com):
   }
   ```
 - **Preserve existing ids**: the migration uses `ctx.adapter.create({ model: 'user', data: { id, ... },
-  forceAllowId: true })`, then creates the `credential` account carrying the old `password_hash`.
+forceAllowId: true })`, then creates the `credential` account carrying the old `password_hash`.
   Pattern taken from better-auth's Clerk migration guide (Clerk also uses a non-bcrypt hash —
   same situation as us).
 - **Sessions are invalidated by any auth swap** → users sign in again (same password).
@@ -81,7 +81,7 @@ currently references `users.id`. Two facts drive the plan:
 
 1. **The data copy is a runtime script, not a drizzle migration.** better-auth's idempotent copy
    (`users` → `user` + credential `account` rows) runs at server startup. A drizzle migration runs
-   *before* that script on a given start, so a drizzle migration can't assume `user` is populated.
+   _before_ that script on a given start, so a drizzle migration can't assume `user` is populated.
 2. **SQLite can't ALTER a foreign key in place.** Repointing `notes.user_id` from `users.id` to
    `user.id` requires a table rebuild (create new table with the new FK → copy → drop old → rename).
    That rebuild validates every `notes.user_id` against the new parent, so it can only happen
@@ -146,6 +146,7 @@ if (!done) {
   await setMeta('better-auth-migrated', true)
 }
 ```
+
 Test on a throwaway DB copy first; verify a migrated user logs in with the **old** password
 (via the scrypt `verify`), and that `notes.user_id` still resolves.
 
@@ -172,7 +173,7 @@ Test on a throwaway DB copy first; verify a migrated user logs in with the **old
 ## Open questions
 
 - **T1 — AGENTS.md invariant conflict (D3):** moving to cookies makes `notes.token` / `notes.user`
-  obsolete. Decision: stop *using* them (not rename), re-login on upgrade. Still update AGENTS.md
+  obsolete. Decision: stop _using_ them (not rename), re-login on upgrade. Still update AGENTS.md
   text accordingly. **Action**: update AGENTS.md wording.
 - **T3 — `notes.token` key:** same as T1; clearing on upgrade is fine (D3).
 - **T4 — SSE + cookies (RESOLVED for same-origin):** `EventSource` sends cookies automatically for

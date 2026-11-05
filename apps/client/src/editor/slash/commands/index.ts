@@ -25,5 +25,7 @@ export const COMMANDS: Command[] = [
 
 export function filterCommands(query: string) {
   const q = query.toLowerCase();
-  return COMMANDS.filter((c) => c.title.toLowerCase().includes(q) || c.keywords.some((k) => k.startsWith(q)));
+  return COMMANDS.filter(
+    (c) => c.title.toLowerCase().includes(q) || c.keywords.some((k) => k.startsWith(q)),
+  );
 }

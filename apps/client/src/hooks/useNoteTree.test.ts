@@ -53,13 +53,17 @@ describe('useNoteTree', () => {
   });
 
   it('counts unsynced notes', () => {
-    const { result } = renderHook(() => useNoteTree([makeNote({ dirty: 1 }), makeNote(), makeNote({ dirty: 1, trashed: true })]));
+    const { result } = renderHook(() =>
+      useNoteTree([makeNote({ dirty: 1 }), makeNote(), makeNote({ dirty: 1, trashed: true })]),
+    );
     expect(result.current.dirtyCount).toBe(2);
   });
 
   it('returns the same result while the notes array is unchanged', () => {
     const notes = [makeNote()];
-    const { result, rerender } = renderHook(({ list }) => useNoteTree(list), { initialProps: { list: notes } });
+    const { result, rerender } = renderHook(({ list }) => useNoteTree(list), {
+      initialProps: { list: notes },
+    });
     const first = result.current;
 
     rerender({ list: notes });
