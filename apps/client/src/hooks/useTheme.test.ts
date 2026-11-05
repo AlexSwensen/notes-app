@@ -2,7 +2,11 @@ import { describe, expect, it, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { useTheme } from './useTheme';
 
-const prefersDark = (matches: boolean) => vi.stubGlobal('matchMedia', vi.fn(() => ({ matches })));
+const prefersDark = (matches: boolean) =>
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn(() => ({ matches })),
+  );
 
 describe('useTheme', () => {
   it('follows the system preference when nothing is saved', () => {

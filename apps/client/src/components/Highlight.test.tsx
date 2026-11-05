@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import { Highlight } from './Highlight';
 
-const marks = (container: HTMLElement) => [...container.querySelectorAll('mark')].map((m) => m.textContent);
+const marks = (container: HTMLElement) =>
+  [...container.querySelectorAll('mark')].map((m) => m.textContent);
 
 describe('Highlight', () => {
   it('renders plain text when there are no terms', () => {
@@ -23,7 +24,9 @@ describe('Highlight', () => {
   });
 
   it('treats regex characters in terms literally', () => {
-    const { container } = render(<Highlight text="costs $5 (approx.)" terms={['$5', '(approx.)']} />);
+    const { container } = render(
+      <Highlight text="costs $5 (approx.)" terms={['$5', '(approx.)']} />,
+    );
     expect(marks(container)).toEqual(['$5', '(approx.)']);
   });
 });

@@ -25,7 +25,14 @@ describe('createNote', () => {
     const id = await createNote();
     const note = await db.notes.get(id);
 
-    expect(note).toMatchObject({ parentId: null, title: '', content: null, dirty: 1, trashed: false, purged: false });
+    expect(note).toMatchObject({
+      parentId: null,
+      title: '',
+      content: null,
+      dirty: 1,
+      trashed: false,
+      purged: false,
+    });
     expect(note!.createdAt).toBe(note!.updatedAt);
     expect(schedule).toHaveBeenCalled();
   });
@@ -136,12 +143,23 @@ describe('restoreNote', () => {
 describe('purgeNote', () => {
   it('turns the subtree into empty tombstones', async () => {
     await seedTree();
-    await db.notes.update('child', { title: 'Secret', text: 'body', icon: '🔒', content: { type: 'doc' } });
+    await db.notes.update('child', {
+      title: 'Secret',
+      text: 'body',
+      icon: '🔒',
+      content: { type: 'doc' },
+    });
     await purgeNote('root');
 
     for (const id of ['root', 'child', 'grandchild']) {
       expect(await db.notes.get(id)).toMatchObject({
-        purged: true, trashed: true, title: '', text: '', icon: '', content: null, dirty: 1,
+        purged: true,
+        trashed: true,
+        title: '',
+        text: '',
+        icon: '',
+        content: null,
+        dirty: 1,
       });
     }
     expect((await db.notes.get('sibling'))!.purged).toBe(false);

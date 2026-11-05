@@ -34,7 +34,10 @@ describe('static files', () => {
 
   it('returns JSON 404s for non-GET requests and unknown API routes', async () => {
     const app = makeApp({ staticDir: staticDir() });
-    for (const req of [{ method: 'POST' as const, url: '/p/abc' }, { method: 'GET' as const, url: '/api/nope' }]) {
+    for (const req of [
+      { method: 'POST' as const, url: '/p/abc' },
+      { method: 'GET' as const, url: '/api/nope' },
+    ]) {
       const r = await app.inject(req);
       assert.equal(r.statusCode, 404, req.url);
       assert.deepEqual(r.json(), { error: 'Not found' });
@@ -43,7 +46,11 @@ describe('static files', () => {
 
   it('does not serve files outside the static directory', async () => {
     const app = makeApp({ staticDir: staticDir() });
-    for (const url of ['/../../etc/passwd', '/%2e%2e/%2e%2e/etc/passwd', '/assets/..%2f..%2fetc/passwd']) {
+    for (const url of [
+      '/../../etc/passwd',
+      '/%2e%2e/%2e%2e/etc/passwd',
+      '/assets/..%2f..%2fetc/passwd',
+    ]) {
       const r = await app.inject({ url });
       assert.doesNotMatch(r.body, /root:/, url);
       if (r.statusCode === 200) assert.match(r.body, /<title>Notes<\/title>/, url);

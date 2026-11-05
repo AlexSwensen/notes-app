@@ -7,7 +7,11 @@ const ids = (body: { changes: { id: string }[] }) => body.changes.map((n) => n.i
 describe('POST /api/sync', () => {
   it('requires authentication', async () => {
     const app = makeApp();
-    const res = await app.inject({ method: 'POST', url: '/api/sync', payload: { since: 0, changes: [] } });
+    const res = await app.inject({
+      method: 'POST',
+      url: '/api/sync',
+      payload: { since: 0, changes: [] },
+    });
     assert.equal(res.statusCode, 401);
   });
 
@@ -47,7 +51,8 @@ describe('POST /api/sync', () => {
   it('pages large pulls 500 at a time', async () => {
     const app = makeApp();
     const token = await signup(app);
-    const batch = (from: number, n: number) => Array.from({ length: n }, (_, i) => note(`n${from + i}`, 1));
+    const batch = (from: number, n: number) =>
+      Array.from({ length: n }, (_, i) => note(`n${from + i}`, 1));
     await sync(app, token, { since: 0, changes: batch(0, 500) });
     await sync(app, token, { since: 0, changes: batch(500, 20) });
 
@@ -90,7 +95,10 @@ describe('POST /api/sync', () => {
     it(`rejects a note with ${label}`, async () => {
       const app = makeApp();
       const token = await signup(app);
-      const res = await sync(app, token, { since: 0, changes: [note('ok', 1), { ...note('bad', 1), ...patch }] });
+      const res = await sync(app, token, {
+        since: 0,
+        changes: [note('ok', 1), { ...note('bad', 1), ...patch }],
+      });
       assert.equal(res.statusCode, 400);
       // Nothing from the rejected batch is stored.
       assert.deepEqual(ids((await sync(app, token, { since: 0 })).json()), []);
@@ -105,7 +113,10 @@ describe('POST /api/sync', () => {
 
   it('accepts child notes and null content', async () => {
     const app = makeApp();
-    const res = await sync(app, await signup(app), { since: 0, changes: [note('child', 1, { parentId: 'parent', content: null })] });
+    const res = await sync(app, await signup(app), {
+      since: 0,
+      changes: [note('child', 1, { parentId: 'parent', content: null })],
+    });
     assert.equal(res.statusCode, 200);
     assert.equal(res.json().changes[0].parentId, 'parent');
   });

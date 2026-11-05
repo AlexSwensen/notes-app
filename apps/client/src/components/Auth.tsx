@@ -15,7 +15,9 @@ export function Auth({ onAuthed }: { onAuthed: () => void }) {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    api<ConfigResponse>('/api/config').then((c) => setAllowSignup(c.allowSignup)).catch(() => {});
+    api<ConfigResponse>('/api/config')
+      .then((c) => setAllowSignup(c.allowSignup))
+      .catch(() => {});
   }, []);
 
   async function submit(e: FormEvent) {
@@ -28,7 +30,11 @@ export function Auth({ onAuthed }: { onAuthed: () => void }) {
       session.set(res.token, res.user);
       onAuthed();
     } catch (err) {
-      setError(err instanceof TypeError ? 'Cannot reach the server. Check your connection.' : (err as Error).message);
+      setError(
+        err instanceof TypeError
+          ? 'Cannot reach the server. Check your connection.'
+          : (err as Error).message,
+      );
     } finally {
       setBusy(false);
     }
@@ -36,13 +42,26 @@ export function Auth({ onAuthed }: { onAuthed: () => void }) {
 
   return (
     <div className="min-h-full grid place-items-center p-6 bg-sidebar">
-      <form className="w-full max-w-[360px] flex flex-col gap-3.5 bg-bg p-8 rounded-xl shadow-pop" onSubmit={submit}>
+      <form
+        className="w-full max-w-[360px] flex flex-col gap-3.5 bg-bg p-8 rounded-xl shadow-pop"
+        onSubmit={submit}
+      >
         <div className="text-4xl">📝</div>
-        <h1 className="text-2xl font-bold">{mode === 'login' ? 'Welcome back' : 'Create your account'}</h1>
+        <h1 className="text-2xl font-bold">
+          {mode === 'login' ? 'Welcome back' : 'Create your account'}
+        </h1>
         <p className="-mt-2 mb-1 text-sm text-muted">Your notes, synced across all your devices.</p>
         <label className={labelClass}>
           Email
-          <input className={inputClass} type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoFocus />
+          <input
+            className={inputClass}
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoFocus
+          />
         </label>
         <label className={labelClass}>
           Password
@@ -56,13 +75,26 @@ export function Auth({ onAuthed }: { onAuthed: () => void }) {
             onChange={(e) => setPassword(e.target.value)}
           />
         </label>
-        {error && <div className="text-danger text-[13px]" role="alert">{error}</div>}
-        <button className="bg-accent text-white rounded-md px-3.5 py-[9px] font-medium hover:brightness-108 disabled:opacity-60" disabled={busy}>
+        {error && (
+          <div className="text-danger text-[13px]" role="alert">
+            {error}
+          </div>
+        )}
+        <button
+          className="bg-accent text-white rounded-md px-3.5 py-[9px] font-medium hover:brightness-108 disabled:opacity-60"
+          disabled={busy}
+        >
           {busy ? 'Please wait…' : mode === 'login' ? 'Log in' : 'Sign up'}
         </button>
         {(allowSignup || mode === 'signup') && (
-          <button type="button" className="link-btn" onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}>
-            {mode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
+          <button
+            type="button"
+            className="link-btn"
+            onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+          >
+            {mode === 'login'
+              ? "Don't have an account? Sign up"
+              : 'Already have an account? Log in'}
           </button>
         )}
       </form>

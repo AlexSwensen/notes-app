@@ -114,7 +114,9 @@ describe('syncEngine.sync', () => {
   });
 
   it('pushes large backlogs in batches of 200', async () => {
-    await db.notes.bulkAdd(Array.from({ length: 250 }, (_, i) => makeNote({ id: `n${i}`, dirty: 1 })));
+    await db.notes.bulkAdd(
+      Array.from({ length: 250 }, (_, i) => makeNote({ id: `n${i}`, dirty: 1 })),
+    );
     const { requests } = mockServer(() => empty());
 
     await syncEngine.sync();
@@ -163,7 +165,9 @@ describe('syncEngine.sync', () => {
 
   it('queues a follow-up sync when called while already syncing', async () => {
     let release!: () => void;
-    const { fetchMock } = mockServer(() => new Promise((resolve) => (release = () => resolve(empty()))));
+    const { fetchMock } = mockServer(
+      () => new Promise((resolve) => (release = () => resolve(empty()))),
+    );
     const next = vi.spyOn(syncEngine, 'schedule').mockImplementation(() => {});
 
     const first = syncEngine.sync();
@@ -220,7 +224,9 @@ describe('syncEngine.start / stop', () => {
 
     syncEngine.start();
     expect(sync).toHaveBeenCalledOnce();
-    expect(FakeEventSource.last.url).toBe(`/api/events?token=token&clientId=${syncEngine.clientId}`);
+    expect(FakeEventSource.last.url).toBe(
+      `/api/events?token=token&clientId=${syncEngine.clientId}`,
+    );
   });
 
   it('schedules a sync when the server announces a change', () => {

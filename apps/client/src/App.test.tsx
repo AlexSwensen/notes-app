@@ -25,8 +25,14 @@ function setHash(hash: string) {
 beforeEach(() => {
   vi.stubGlobal('isSecureContext', true);
   vi.stubGlobal('EventSource', FakeEventSource);
-  vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false })));
-  vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ seq: 0, more: false, changes: [], allowSignup: true })));
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn(() => ({ matches: false })),
+  );
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => jsonResponse({ seq: 0, more: false, changes: [], allowSignup: true })),
+  );
   vi.spyOn(syncEngine, 'schedule').mockImplementation(() => {});
   vi.spyOn(syncEngine, 'start').mockImplementation(() => {});
   Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1200 });
@@ -106,7 +112,9 @@ describe('App', () => {
     render(<App />);
 
     fireEvent.click(await screen.findByRole('button', { name: /Log out/ }));
-    await waitFor(() => expect(confirm).toHaveBeenCalledWith(expect.stringContaining("1 change(s) haven't synced")));
+    await waitFor(() =>
+      expect(confirm).toHaveBeenCalledWith(expect.stringContaining("1 change(s) haven't synced")),
+    );
     expect(session.token).toBe('tok');
     expect(await db.notes.count()).toBe(1);
   });

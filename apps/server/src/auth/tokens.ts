@@ -7,10 +7,13 @@ const TOKEN_TTL_MS = 1000 * 60 * 60 * 24 * 90;
  * and signature is an HMAC-SHA256 of the payload using the server secret.
  */
 export function createTokenService(secret: string) {
-  const sign = (payload: string) => createHmac('sha256', secret).update(payload).digest('base64url');
+  const sign = (payload: string) =>
+    createHmac('sha256', secret).update(payload).digest('base64url');
   return {
     issue(userId: string): string {
-      const payload = Buffer.from(JSON.stringify({ sub: userId, exp: Date.now() + TOKEN_TTL_MS })).toString('base64url');
+      const payload = Buffer.from(
+        JSON.stringify({ sub: userId, exp: Date.now() + TOKEN_TTL_MS }),
+      ).toString('base64url');
       return `${payload}.${sign(payload)}`;
     },
     /** Returns the user id if the token is valid and not expired, otherwise `null`. */

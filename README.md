@@ -89,7 +89,9 @@ npm run dev:client   # Vite on :5173 (proxies /api to :3000)
 npm test             # all tests (client: Vitest, server: node:test)
 npm run test:coverage # tests with coverage reports in apps/*/coverage
 npm run typecheck    # type-check every workspace
-npm run lint         # lint every workspace
+npm run lint         # lint every workspace (oxlint)
+npm run format:check # check formatting (prettier)
+npm run format       # rewrite formatting (prettier)
 ```
 
 To add a dependency to one app, target its workspace: `npm install <pkg> -w @sheafly/client`.
@@ -167,7 +169,7 @@ To send a pull request:
 1. Fork the repo and create a branch from `main`.
 2. Set up the project as described in [Development](#development).
 3. Make your change and add or update tests next to the code you touched.
-4. Run `npm run lint`, `npm run typecheck`, `npm test` and `npm run build`. CI runs the same checks.
+4. Run `npm run lint`, `npm run format:check`, `npm run typecheck`, `npm test` and `npm run build`. CI runs the same checks.
 5. Use [Conventional Commits](https://www.conventionalcommits.org) for your commit messages (see [Releases](#releases)), then open the pull request against `main`.
 
 [AGENTS.md](AGENTS.md) summarizes the project conventions (styling, database migrations, identifiers that must not be renamed), so it's worth a quick read before your first change.

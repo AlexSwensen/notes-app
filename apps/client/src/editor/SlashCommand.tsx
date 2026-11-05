@@ -9,7 +9,8 @@ function position(el: HTMLElement, rect: DOMRect | null | undefined) {
   if (!rect) return;
   const menuHeight = Math.min(el.offsetHeight || 320, 320);
   const below = rect.bottom + 6;
-  const top = below + menuHeight > window.innerHeight ? Math.max(8, rect.top - menuHeight - 6) : below;
+  const top =
+    below + menuHeight > window.innerHeight ? Math.max(8, rect.top - menuHeight - 6) : below;
   el.style.top = `${top}px`;
   el.style.left = `${Math.min(rect.left, window.innerWidth - 300)}px`;
 }

@@ -62,7 +62,11 @@ export function snippet(text: string, terms: string[], radius = 70): string {
   if (pos === -1) return text.slice(0, radius * 2);
   const start = Math.max(0, pos - radius);
   const end = Math.min(text.length, pos + radius);
-  return (start > 0 ? '…' : '') + text.slice(start, end).replace(/\s+/g, ' ') + (end < text.length ? '…' : '');
+  return (
+    (start > 0 ? '…' : '') +
+    text.slice(start, end).replace(/\s+/g, ' ') +
+    (end < text.length ? '…' : '')
+  );
 }
 
 export function escapeRegExp(s: string) {

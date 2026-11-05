@@ -14,7 +14,15 @@ const command: Command = {
 function setup(overrides: Partial<Parameters<typeof SlashItem>[0]> = {}) {
   const onHover = vi.fn();
   const onSelect = vi.fn();
-  render(<SlashItem command={command} selected={false} onHover={onHover} onSelect={onSelect} {...overrides} />);
+  render(
+    <SlashItem
+      command={command}
+      selected={false}
+      onHover={onHover}
+      onSelect={onSelect}
+      {...overrides}
+    />,
+  );
   return { onHover, onSelect };
 }
 
@@ -30,7 +38,9 @@ describe('SlashItem', () => {
     );
     expect(screen.getByRole('option').getAttribute('aria-selected')).toBe('true');
 
-    rerender(<SlashItem command={command} selected={false} onHover={() => {}} onSelect={() => {}} />);
+    rerender(
+      <SlashItem command={command} selected={false} onHover={() => {}} onSelect={() => {}} />,
+    );
     expect(screen.getByRole('option').getAttribute('aria-selected')).toBe('false');
   });
 

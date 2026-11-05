@@ -11,7 +11,11 @@ import { makeNote } from '../test/factories';
 type Overrides = Partial<ComponentProps<typeof Sidebar>>;
 
 /** Renders the sidebar the way App does, with live expand state. */
-function Harness({ notes, initiallyExpanded = [], ...overrides }: { notes: LocalNote[]; initiallyExpanded?: string[] } & Overrides) {
+function Harness({
+  notes,
+  initiallyExpanded = [],
+  ...overrides
+}: { notes: LocalNote[]; initiallyExpanded?: string[] } & Overrides) {
   const { tree, favorites, dirtyCount } = useNoteTree(notes);
   const [expanded, setExpandedState] = useState(new Set(initiallyExpanded));
   return (
@@ -35,7 +39,10 @@ function Harness({ notes, initiallyExpanded = [], ...overrides }: { notes: Local
   );
 }
 
-async function renderSidebar(notes: LocalNote[], props: Overrides & { initiallyExpanded?: string[] } = {}) {
+async function renderSidebar(
+  notes: LocalNote[],
+  props: Overrides & { initiallyExpanded?: string[] } = {},
+) {
   await db.notes.bulkAdd(notes);
   return render(<Harness notes={notes} {...props} />);
 }
@@ -69,8 +76,12 @@ describe('Sidebar', () => {
 
   it('links to the contributing guide and the issue tracker', async () => {
     await renderSidebar([]);
-    expect(screen.getByRole('link', { name: /Contribute/ }).getAttribute('href')).toBe('https://github.com/AlexSwensen/sheafly#contributing');
-    expect(screen.getByRole('link', { name: /Report a bug/ }).getAttribute('href')).toBe('https://github.com/AlexSwensen/sheafly/issues');
+    expect(screen.getByRole('link', { name: /Contribute/ }).getAttribute('href')).toBe(
+      'https://github.com/AlexSwensen/sheafly#contributing',
+    );
+    expect(screen.getByRole('link', { name: /Report a bug/ }).getAttribute('href')).toBe(
+      'https://github.com/AlexSwensen/sheafly/issues',
+    );
   });
 
   it('lists favorites in their own section', async () => {
@@ -80,7 +91,11 @@ describe('Sidebar', () => {
   });
 
   it('expands and collapses pages to show their children', async () => {
-    await renderSidebar([makeNote({ id: 'p', title: 'Parent' }), makeNote({ title: 'Child', parentId: 'p' }), makeNote({ id: 'leaf', title: 'Leaf' })]);
+    await renderSidebar([
+      makeNote({ id: 'p', title: 'Parent' }),
+      makeNote({ title: 'Child', parentId: 'p' }),
+      makeNote({ id: 'leaf', title: 'Leaf' }),
+    ]);
     const user = userEvent.setup();
 
     expect(screen.queryByText('Child')).toBeNull();
@@ -120,7 +135,10 @@ describe('Sidebar', () => {
   it('favorites, moves and trashes pages from the item menu', async () => {
     const onNavigate = vi.fn();
     await renderSidebar(
-      [makeNote({ id: 'p', title: 'Parent' }), makeNote({ id: 'c', title: 'Child', parentId: 'p' })],
+      [
+        makeNote({ id: 'p', title: 'Parent' }),
+        makeNote({ id: 'c', title: 'Child', parentId: 'p' }),
+      ],
       { currentId: 'c', onNavigate, initiallyExpanded: ['p'] },
     );
     const user = userEvent.setup();
@@ -147,9 +165,16 @@ describe('Sidebar', () => {
   });
 
   it('moves a page by dragging it onto another page or the Pages section', async () => {
-    await renderSidebar([makeNote({ id: 'a', title: 'Drag me' }), makeNote({ id: 'b', title: 'Drop here' })]);
+    await renderSidebar([
+      makeNote({ id: 'a', title: 'Drag me' }),
+      makeNote({ id: 'b', title: 'Drop here' }),
+    ]);
     const data = new Map<string, string>();
-    const dataTransfer = { setData: (k: string, v: string) => data.set(k, v), getData: (k: string) => data.get(k) ?? '', effectAllowed: '' };
+    const dataTransfer = {
+      setData: (k: string, v: string) => data.set(k, v),
+      getData: (k: string) => data.get(k) ?? '',
+      effectAllowed: '',
+    };
 
     fireEvent.dragStart(row('Drag me'), { dataTransfer });
     fireEvent.dragOver(row('Drop here'), { dataTransfer });
@@ -165,7 +190,11 @@ describe('Sidebar', () => {
 
   it('wires up the navigation and footer buttons', async () => {
     const props = {
-      onSearch: vi.fn(), onNavigate: vi.fn(), onToggleTheme: vi.fn(), onLogout: vi.fn(), onClose: vi.fn(),
+      onSearch: vi.fn(),
+      onNavigate: vi.fn(),
+      onToggleTheme: vi.fn(),
+      onLogout: vi.fn(),
+      onClose: vi.fn(),
     };
     await renderSidebar([], { ...props, route: 'trash', theme: 'dark' });
     const user = userEvent.setup();

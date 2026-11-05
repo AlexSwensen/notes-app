@@ -1,0 +1,13 @@
+node_modules
+dist
+build
+coverage
+*.min.js
+*.min.css
+package-lock.json
+packages/db/drizzle
+.vite
+apps/client/dist
+apps/server/data
+.git
+CHANGELOG.md

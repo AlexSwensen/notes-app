@@ -39,7 +39,11 @@ export function buildApp(opts: AppOptions) {
       ? {
           serializers: {
             // Never log the SSE auth token from the query string.
-            req: (req) => ({ method: req.method, url: req.url.replace(/token=[^&]*/, 'token=[redacted]'), remoteAddress: req.ip }),
+            req: (req) => ({
+              method: req.method,
+              url: req.url.replace(/token=[^&]*/, 'token=[redacted]'),
+              remoteAddress: req.ip,
+            }),
           },
         }
       : false,

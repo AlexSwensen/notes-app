@@ -19,7 +19,11 @@ const NO_NOTES: LocalNote[] = [];
 
 async function logout() {
   const unsynced = await db.notes.where('dirty').equals(1).count();
-  if (unsynced && !confirm(`${unsynced} change(s) haven't synced yet and will be lost. Log out anyway?`)) return;
+  if (
+    unsynced &&
+    !confirm(`${unsynced} change(s) haven't synced yet and will be lost. Log out anyway?`)
+  )
+    return;
   syncEngine.stop();
   session.clear();
   await db.delete();
@@ -81,11 +85,16 @@ function Workspace() {
   useEffect(() => {
     if (!current) return;
     const ancestors: string[] = [];
-    for (let p = current.parentId ? byId.get(current.parentId) : undefined; p; p = p.parentId ? byId.get(p.parentId) : undefined) {
+    for (
+      let p = current.parentId ? byId.get(current.parentId) : undefined;
+      p;
+      p = p.parentId ? byId.get(p.parentId) : undefined
+    ) {
       if (ancestors.includes(p.id)) break;
       ancestors.push(p.id);
     }
-    if (ancestors.some((id) => !expanded.has(id))) setExpanded((s) => new Set([...s, ...ancestors]));
+    if (ancestors.some((id) => !expanded.has(id)))
+      setExpanded((s) => new Set([...s, ...ancestors]));
   }, [current, byId, expanded, setExpanded]);
 
   const go = (h: string) => {
@@ -96,14 +105,33 @@ function Workspace() {
   let main;
   if (route === 'trash') main = <Trash notes={notes} byId={byId} onNavigate={go} />;
   else if (route === 'page' && current && !current.purged)
-    main = <PageView note={current} byId={byId} subpages={tree.get(current.id) ?? NO_NOTES} onNavigate={go} />;
+    main = (
+      <PageView
+        note={current}
+        byId={byId}
+        subpages={tree.get(current.id) ?? NO_NOTES}
+        onNavigate={go}
+      />
+    );
   else if (route === 'page')
-    main = <div className="min-h-full grid place-items-center text-muted">{current?.purged ? 'This page was permanently deleted.' : 'Page not found.'}</div>;
+    main = (
+      <div className="min-h-full grid place-items-center text-muted">
+        {current?.purged ? 'This page was permanently deleted.' : 'Page not found.'}
+      </div>
+    );
   else main = <Home notes={notes} onNavigate={go} onSearch={() => setSearchOpen(true)} />;
 
   return (
-    <div className="group/app flex h-full overflow-hidden" data-sidebar={sidebarOpen ? 'open' : 'closed'}>
-      {sidebarOpen && <div className="hidden max-md:block fixed inset-0 z-55 bg-[rgba(15,15,15,0.4)]" onClick={() => setSidebarOpen(false)} />}
+    <div
+      className="group/app flex h-full overflow-hidden"
+      data-sidebar={sidebarOpen ? 'open' : 'closed'}
+    >
+      {sidebarOpen && (
+        <div
+          className="hidden max-md:block fixed inset-0 z-55 bg-[rgba(15,15,15,0.4)]"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       {sidebarOpen && (
         <Sidebar
           tree={tree}
@@ -124,18 +152,33 @@ function Workspace() {
       )}
       <main className="flex-1 min-w-0 overflow-y-auto relative">
         {!sidebarOpen && (
-          <button className="icon-btn absolute top-2 left-2 z-5" title="Open sidebar (Ctrl+\)" onClick={() => setSidebarOpen(true)}>☰</button>
+          <button
+            className="icon-btn absolute top-2 left-2 z-5"
+            title="Open sidebar (Ctrl+\)"
+            onClick={() => setSidebarOpen(true)}
+          >
+            ☰
+          </button>
         )}
         {main}
       </main>
-      {searchOpen && <SearchPalette notes={notes} byId={byId} onNavigate={go} onClose={() => setSearchOpen(false)} />}
+      {searchOpen && (
+        <SearchPalette
+          notes={notes}
+          byId={byId}
+          onNavigate={go}
+          onClose={() => setSearchOpen(false)}
+        />
+      )}
     </div>
   );
 }
 
 /** Opens the local database before showing the workspace, so open failures get a recovery screen. */
 function LocalDataGate() {
-  const [state, setState] = useState<{ status: 'opening' | 'ready' } | { status: 'error'; error: unknown }>({
+  const [state, setState] = useState<
+    { status: 'opening' | 'ready' } | { status: 'error'; error: unknown }
+  >({
     status: 'opening',
   });
 
@@ -167,12 +210,17 @@ export default function App() {
   return (
     <div className="flex flex-col h-full">
       {showHttpWarning && (
-        <div role="alert" className="flex items-center gap-3 px-4 py-2 text-sm bg-mark text-fg border-b border-line">
+        <div
+          role="alert"
+          className="flex items-center gap-3 px-4 py-2 text-sm bg-mark text-fg border-b border-line"
+        >
           <span className="flex-1">
-            This page isn't served over HTTPS, so offline mode and installing as an app are unavailable. Use a reverse
-            proxy with TLS or Tailscale to enable them.
+            This page isn't served over HTTPS, so offline mode and installing as an app are
+            unavailable. Use a reverse proxy with TLS or Tailscale to enable them.
           </span>
-          <button className="icon-btn" title="Dismiss" onClick={dismissHttpWarning}>✕</button>
+          <button className="icon-btn" title="Dismiss" onClick={dismissHttpWarning}>
+            ✕
+          </button>
         </div>
       )}
       <div className="flex-1 min-h-0">

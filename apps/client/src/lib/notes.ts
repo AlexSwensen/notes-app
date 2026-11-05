@@ -13,7 +13,10 @@ function siblingsOf(parentId: string | null) {
     : db.notes.filter((n) => n.parentId === null).toArray();
 }
 
-export async function createNote(parentId: string | null = null, init: Partial<LocalNote> = {}): Promise<string> {
+export async function createNote(
+  parentId: string | null = null,
+  init: Partial<LocalNote> = {},
+): Promise<string> {
   const siblings = await siblingsOf(parentId);
   const now = Date.now();
   const note: LocalNote = {
@@ -70,7 +73,8 @@ async function setTrashed(id: string, trashed: boolean) {
   await db.transaction('rw', db.notes, async () => {
     for (const nid of ids) {
       const cur = await db.notes.get(nid);
-      if (cur && !cur.purged) await db.notes.update(nid, { trashed, updatedAt: nextTimestamp(cur.updatedAt), dirty: 1 });
+      if (cur && !cur.purged)
+        await db.notes.update(nid, { trashed, updatedAt: nextTimestamp(cur.updatedAt), dirty: 1 });
     }
   });
   syncEngine.schedule();
@@ -95,8 +99,14 @@ export async function purgeNote(id: string) {
       const cur = await db.notes.get(nid);
       if (!cur) continue;
       await db.notes.update(nid, {
-        purged: true, trashed: true, title: '', text: '', icon: '', content: null,
-        updatedAt: nextTimestamp(cur.updatedAt), dirty: 1,
+        purged: true,
+        trashed: true,
+        title: '',
+        text: '',
+        icon: '',
+        content: null,
+        updatedAt: nextTimestamp(cur.updatedAt),
+        dirty: 1,
       });
     }
   });
