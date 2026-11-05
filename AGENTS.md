@@ -19,10 +19,11 @@ Target one workspace with `-w @sheafly/client`, `-w @sheafly/server` or `-w @she
 
 ## Architecture
 
-- `apps/server`: Fastify + Drizzle on the built-in `node:sqlite`. **No build step**: Node runs the `.ts` files directly (type stripping), so:
-  - relative imports must end in `.ts` (`import { openDb } from './db/index.ts'`)
+- `apps/server`: Fastify API, serves the built client. **No build step**: Node runs the `.ts` files directly (type stripping), so:
+  - relative imports must end in `.ts` (`import { openDb } from '@sheafly/db'`)
   - only erasable TypeScript is allowed (no `enum`, `namespace`, or constructor parameter properties)
 - `apps/client`: React 19 + Vite PWA, TipTap editor, Dexie (IndexedDB), Tailwind CSS v4.
+- `packages/db`: Drizzle ORM schema and database connection logic (SQLite).
 - `packages/shared`: types only, imported by both apps as `@sheafly/shared`. Change API and note shapes here first.
 - The client is offline-first: it writes to IndexedDB, then the sync engine pushes dirty notes to `POST /api/sync` (last-writer-wins per note on `updatedAt`).
 

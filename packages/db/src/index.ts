@@ -22,7 +22,7 @@ export function openDb(file: string) {
   const sqlite = new DatabaseSync(file);
   sqlite.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
   const db = drizzle({ client: sqlite, relations });
-  migrate(db, { migrationsFolder: fileURLToPath(new URL('../../drizzle', import.meta.url)) });
+  migrate(db, { migrationsFolder: fileURLToPath(new URL('../drizzle', import.meta.url)) });
 
   const seqValue = sql<number>`CAST(${meta.value} AS INTEGER)`;
 
@@ -101,3 +101,5 @@ export function openDb(file: string) {
 }
 
 export type Db = ReturnType<typeof openDb>;
+
+export * from './schema/index.ts';
