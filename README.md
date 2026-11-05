@@ -84,6 +84,7 @@ Requires Node 26+. The server runs TypeScript natively, with no build step. This
 
 ```bash
 npm install          # installs all workspaces
+npm run dev          # runs both server and client (see scripts/)
 npm run dev:server   # API on :3000
 npm run dev:client   # Vite on :5173 (proxies /api to :3000)
 npm test             # all tests (client: Vitest, server: node:test)

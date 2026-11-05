@@ -2,6 +2,7 @@
   "name": "sheafly",
   "version": "1.2.6",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -15,6 +16,7 @@
     "minimatch": "^11.0.4"
   },
   "scripts": {
+    "dev": "node scripts/dev.ts",
     "dev:server": "npm run dev -w @sheafly/server",
     "dev:client": "npm run dev -w @sheafly/client",
     "build": "npm run build -w @sheafly/client",
@@ -30,6 +32,8 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
+    "@types/node": "^26.6.6",
+    "concurrently": "^10.0.6",
     "husky": "^9.1.7",
     "prettier": "3.9.10"
   }
