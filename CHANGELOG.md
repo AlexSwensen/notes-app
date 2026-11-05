@@ -1,3 +1,9 @@
+## [1.2.6](https://github.com/AlexSwensen/sheafly/compare/v1.2.5...v1.2.6) (2026-11-05)
+
+### Bug Fixes
+
+* **prettier:** add formatting checks and rule enforcement ([95228df](https://github.com/AlexSwensen/sheafly/commit/95228dfe3cf1b92a3a88e301f9dbcd2a66f9e528))
+
 ## [1.2.5](https://github.com/AlexSwensen/sheafly/compare/v1.2.4...v1.2.5) (2026-11-05)
 
 ### Bug Fixes
