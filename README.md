@@ -1,6 +1,5 @@
 # 📝 Sheafly
 
-
 <img width="1844" height="899" alt="Sheafly app after login" src="https://github.com/user-attachments/assets/539f59df-c66a-4b8d-ab02-1b0bb033a2f6" />
 
 A Notion-style notes app with **cloud sync across your devices** and **instant full-text search**. Self-hosted: one small Node server with a SQLite database, run with Docker.
@@ -8,7 +7,7 @@ A Notion-style notes app with **cloud sync across your devices** and **instant f
 ## Features
 
 - **Block editor**: headings, bulleted, numbered and to-do lists, quotes, code blocks, dividers, links and highlights
-  - Type `/` for the command menu; Markdown shortcuts work (`#`, `-`, `1.`, `[ ]`, `>`, `` ``` ``)
+  - Type `/` for the command menu; Markdown shortcuts work (`#`, `-`, `1.`, `[ ]`, `>`, ` ``` `)
   - Select text to get a formatting toolbar
 - **Nested pages**: a sidebar page tree with drag-and-drop, breadcrumbs, sub-pages, emoji icons and favorites
 - **Search** (`Ctrl/⌘ K`): fuzzy, typo-tolerant, prefix search across titles and content, with highlighted snippets. It runs locally, so it's instant and works offline.
@@ -43,14 +42,14 @@ Or, for a private setup, use [Tailscale](https://tailscale.com) with `tailscale 
 
 ### Configuration
 
-| Variable       | Default                          | Description                                                  |
-| -------------- | -------------------------------- | ------------------------------------------------------------ |
-| `PORT`         | `3000`                           | HTTP port                                                    |
-| `DATA_DIR`     | `/data` (Docker), `apps/server/data` | Where `notes.db` and `secret.key` live                   |
-| `ALLOW_SIGNUP` | `true`                           | `false` disables new accounts. The first account can always be created. |
-| `AUTH_SECRET`  | auto-generated in `DATA_DIR`     | HMAC key for session tokens                                  |
-| `TRUST_PROXY`  | `false`                          | Set `true` behind a reverse proxy so login rate limits use the real client IP |
-| `PUID` / `PGID` | `1000` / `1000`                 | User and group the server runs as. `/data` is chowned to them on start (use `99`/`100` on Unraid). |
+| Variable        | Default                              | Description                                                                                        |
+| --------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `PORT`          | `3000`                               | HTTP port                                                                                          |
+| `DATA_DIR`      | `/data` (Docker), `apps/server/data` | Where `notes.db` and `secret.key` live                                                             |
+| `ALLOW_SIGNUP`  | `true`                               | `false` disables new accounts. The first account can always be created.                            |
+| `AUTH_SECRET`   | auto-generated in `DATA_DIR`         | HMAC key for session tokens                                                                        |
+| `TRUST_PROXY`   | `false`                              | Set `true` behind a reverse proxy so login rate limits use the real client IP                      |
+| `PUID` / `PGID` | `1000` / `1000`                      | User and group the server runs as. `/data` is chowned to them on start (use `99`/`100` on Unraid). |
 
 ### Prebuilt images and Unraid
 
@@ -58,7 +57,7 @@ Every release publishes a multi-arch image (amd64 and arm64) to `ghcr.io/alexswe
 
 #### Unraid
 
-1. Copy the template into Unraid's user templates folder. From the Unraid terminal (**>_** in the top right):
+1. Copy the template into Unraid's user templates folder. From the Unraid terminal (**>\_** in the top right):
 
    ```bash
    wget -O /boot/config/plugins/dockerMan/templates-user/my-sheafly.xml \
@@ -66,6 +65,7 @@ Every release publishes a multi-arch image (amd64 and arm64) to `ghcr.io/alexswe
    ```
 
    Or copy [`unraid/sheafly.xml`](unraid/sheafly.xml) there yourself. The file name must start with `my-`.
+
 2. On the **Docker** tab, click **Add Container** and pick **sheafly** under **User templates** in the **Template** dropdown.
 3. Check the port and data path (default `/mnt/user/appdata/sheafly`), then click **Apply**.
 
@@ -76,11 +76,11 @@ The template uses the `latest` tag, so Unraid's **Check for updates** on the Doc
 The Publish workflow pushes to Docker Hub too once these are set in the GitHub repo (**Settings → Secrets and variables → Actions**):
 
 - **Variable** `DOCKERHUB_USERNAME`: your Docker Hub username (the image becomes `<username>/sheafly`)
-- **Secret** `DOCKERHUB_TOKEN`: a Docker Hub [access token](https://app.docker.com/settings/personal-access-tokens) with *Read, Write, and Delete* access
+- **Secret** `DOCKERHUB_TOKEN`: a Docker Hub [access token](https://app.docker.com/settings/personal-access-tokens) with _Read, Write, and Delete_ access
 
 ## Development
 
-Requires Node 24+. The server runs TypeScript natively, with no build step. This is an [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) monorepo: run every command from the repo root, and there is a single `package-lock.json`.
+Requires Node 26+. The server runs TypeScript natively, with no build step. This is an [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) monorepo: run every command from the repo root, and there is a single `package-lock.json`.
 
 ```bash
 npm install          # installs all workspaces
@@ -110,12 +110,12 @@ semantic-release counts versions by git tag, not by whether a release was publis
 
 Commit messages must follow [Conventional Commits](https://www.conventionalcommits.org). A git hook checks them locally (installed by `npm install`), and CI checks them on pull requests.
 
-| Commit | Release |
-| ------ | ------- |
-| `fix: …` | patch (1.0.**1**) |
-| `feat: …` | minor (1.**1**.0) |
-| `feat!: …` or a `BREAKING CHANGE:` footer | major (**2**.0.0) |
-| `docs:`, `chore:`, `test:`, `refactor:`, `ci:` … | no release |
+| Commit                                           | Release           |
+| ------------------------------------------------ | ----------------- |
+| `fix: …`                                         | patch (1.0.**1**) |
+| `feat: …`                                        | minor (1.**1**.0) |
+| `feat!: …` or a `BREAKING CHANGE:` footer        | major (**2**.0.0) |
+| `docs:`, `chore:`, `test:`, `refactor:`, `ci:` … | no release        |
 
 The running version is shown at the bottom of the sidebar and returned by `GET /api/health`.
 

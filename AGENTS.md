@@ -4,7 +4,7 @@ Sheafly is a self-hosted, Notion-style notes app: a React PWA plus a small Node 
 
 ## Build and test
 
-Requires Node 24+. Run everything from the repo root (there is one `package-lock.json`):
+Requires Node 26+. Run everything from the repo root (there is one `package-lock.json`):
 
 ```bash
 npm install
