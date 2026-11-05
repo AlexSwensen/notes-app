@@ -1,3 +1,9 @@
+## [1.2.5](https://github.com/AlexSwensen/sheafly/compare/v1.2.4...v1.2.5) (2026-11-05)
+
+### Bug Fixes
+
+* fix the 3 dot menu besides each item so it renders correctly ([a1b6bc9](https://github.com/AlexSwensen/sheafly/commit/a1b6bc99c020c2dcc22b3726a17d7c69a57f6902))
+
 ## [1.2.4](https://github.com/AlexSwensen/sheafly/compare/v1.2.3...v1.2.4) (2026-11-05)
 
 ### Bug Fixes
