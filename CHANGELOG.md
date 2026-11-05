@@ -1,3 +1,9 @@
+## [1.2.4](https://github.com/AlexSwensen/sheafly/compare/v1.2.3...v1.2.4) (2026-11-05)
+
+### Bug Fixes
+
+* **db:** refactor db into its own package ([a72b647](https://github.com/AlexSwensen/sheafly/commit/a72b6472d86d10bf2798bf4e0abb156e4d8ac9a2))
+
 ## [1.2.3](https://github.com/AlexSwensen/sheafly/compare/v1.2.2...v1.2.3) (2026-11-04)
 
 ### Bug Fixes
