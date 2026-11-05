@@ -76,7 +76,7 @@ export function Sidebar(props: Props) {
     const children = tree.get(note.id) ?? [];
     const isOpen = expanded.has(note.id);
     return (
-      <li key={note.id}>
+      <li key={note.id} className="relative">
         <div
           className={`${treeItem(note.id === currentId)}${dragOver === note.id ? ' inset-ring-2 inset-ring-accent bg-accent/10' : ''}`}
           style={{ paddingLeft: 8 + depth * 14 }}
@@ -110,24 +110,24 @@ export function Sidebar(props: Props) {
             <button className={treeAction} title="More" onClick={() => setMenuFor(menuFor === note.id ? null : note.id)}>⋯</button>
             <button className={treeAction} title="Add a page inside" onClick={() => addPage(note.id)}>+</button>
           </span>
-          {menuFor === note.id && (
-            <div
-              className="absolute right-0 top-[30px] z-20 min-w-[220px] bg-elevated rounded-md shadow-pop p-1 flex flex-col font-normal"
-              onClick={(e) => e.stopPropagation()}
-              onMouseLeave={() => setMenuFor(null)}
-            >
-              <button className={menuButton} onClick={() => { updateNote(note.id, { favorite: !note.favorite }); setMenuFor(null); }}>
-                {note.favorite ? '☆ Remove from favorites' : '★ Add to favorites'}
-              </button>
-              {note.parentId && (
-                <button className={menuButton} onClick={() => { moveNote(note.id, null); setMenuFor(null); }}>⇱ Move to top level</button>
-              )}
-              <button className={`${menuButton} text-danger`} onClick={() => { trashNote(note.id); setMenuFor(null); if (note.id === currentId) onNavigate('#/'); }}>
-                🗑 Move to trash
-              </button>
-            </div>
-          )}
         </div>
+        {menuFor === note.id && (
+          <div
+            className="absolute right-0 top-[30px] z-30 min-w-[220px] bg-elevated rounded-md shadow-pop p-1 flex flex-col font-normal border border-line"
+            onClick={(e) => e.stopPropagation()}
+            onMouseLeave={() => setMenuFor(null)}
+          >
+            <button className={menuButton} onClick={() => { updateNote(note.id, { favorite: !note.favorite }); setMenuFor(null); }}>
+              {note.favorite ? '☆ Remove from favorites' : '★ Add to favorites'}
+            </button>
+            {note.parentId && (
+              <button className={menuButton} onClick={() => { moveNote(note.id, null); setMenuFor(null); }}>⇱ Move to top level</button>
+            )}
+            <button className={`${menuButton} text-danger`} onClick={() => { trashNote(note.id); setMenuFor(null); if (note.id === currentId) onNavigate('#/'); }}>
+              🗑 Move to trash
+            </button>
+          </div>
+        )}
         {isOpen && (
           children.length ? (
             <ul>{children.map((c) => renderItem(c, depth + 1))}</ul>
