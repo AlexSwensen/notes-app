@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/AlexSwensen/sheafly/compare/v1.2.6...v1.3.0) (2026-11-06)
+
+### Features
+
+* **notes:** add ability to duplicate an existing note ([484fd50](https://github.com/AlexSwensen/sheafly/commit/484fd50ebc0757189b4fbefd5697156a45baadb3))
+
 ## [1.2.6](https://github.com/AlexSwensen/sheafly/compare/v1.2.5...v1.2.6) (2026-11-05)
 
 ### Bug Fixes
