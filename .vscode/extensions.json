@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "2h2d.vscode-node-test-explorer",
+    "esbenp.prettier-vscode",
+    "qwtel.sqlite-viewer",
+    "vitest.explorer",
+    "editorconfig.editorconfig",
+    "ms-playwright.playwright"
+  ]
+}
