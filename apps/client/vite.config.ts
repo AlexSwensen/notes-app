@@ -9,6 +9,22 @@ const { version } = JSON.parse(
 ) as { version: string };
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        codeSplitting: {
+          minSize: 20000,
+          maxSize: 50000,
+          groups: [
+            {
+              name: 'vendor',
+              test: /node_modules/,
+            },
+          ],
+        },
+      },
+    },
+  },
   define: { __APP_VERSION__: JSON.stringify(version) },
   plugins: [
     react(),
