@@ -156,6 +156,21 @@ export function Sidebar(props: Props) {
           >
             <button
               className={menuButton}
+              onClick={async () => {
+                const id = await createNote(note.parentId, {
+                  title: note.title + ' (copy)',
+                  content: note.content,
+                  text: note.text,
+                  icon: note.icon,
+                });
+                onNavigate(`#/p/${id}`);
+                setMenuFor(null);
+              }}
+            >
+              ⧉ Duplicate
+            </button>
+            <button
+              className={menuButton}
               onClick={() => {
                 updateNote(note.id, { favorite: !note.favorite });
                 setMenuFor(null);
