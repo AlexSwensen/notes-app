@@ -1,3 +1,9 @@
+## [1.3.1](https://github.com/AlexSwensen/sheafly/compare/v1.3.0...v1.3.1) (2026-11-06)
+
+### Bug Fixes
+
+* **codesplitting:** vendor files are codesplit and cached client side ([4cba031](https://github.com/AlexSwensen/sheafly/commit/4cba031118ff64d3f446202f51aa77663c99b225))
+
 ## [1.3.0](https://github.com/AlexSwensen/sheafly/compare/v1.2.6...v1.3.0) (2026-11-06)
 
 ### Features
