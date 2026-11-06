@@ -163,6 +163,18 @@ describe('Sidebar', () => {
     await userEvent.click(within(row('Top')).getByTitle('More'));
     expect(screen.queryByText('⇱ Move to top level')).toBeNull();
   });
+  it('duplicates a page', async () => {
+    await renderSidebar([makeNote({ id: 'a', title: 'Original', content: { type: 'doc' } })]);
+    const user = userEvent.setup();
+    await user.click(within(row('Original')).getByTitle('More'));
+    await user.click(screen.getByText('⧉ Duplicate'));
+
+    const notes = await db.notes.toArray();
+    expect(notes.length).toBe(2);
+    const copy = notes.find((n) => n.id !== 'a');
+    expect(copy?.title).toBe('Original (copy)');
+    expect(copy?.content).toEqual({ type: 'doc' });
+  });
 
   it('moves a page by dragging it onto another page or the Pages section', async () => {
     await renderSidebar([
